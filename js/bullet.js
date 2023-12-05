@@ -31,16 +31,20 @@ class Bullet {
         }
       }
     }
-    if (this.pos.y < -20) {
+    if (this.isOutOfBounds()) {
       this.destroy();
-      //
-      //
-      //ADD BOUNDS CHECK
-      //
-      //
     } else {
       this.show();
     }
+  }
+
+  isOutOfBounds() {
+    return (
+      this.pos.x < -20 ||
+      this.pos.x + this.size > width ||
+      this.pos.y < -20 ||
+      this.pos.y + this.size > height
+    );
   }
 
   show() {

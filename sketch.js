@@ -63,6 +63,7 @@ function newGame() {
   experiences = new Array();
   weapons = new Array();
   player = new PlayerShip(playerSprite);
+  weapons.push(new Blaster(0.5, 5, 7));
   for (let index = 0; index < enemyShips.length; index++) {
     const ship = enemyShips[index];
     ship.direction.x = (index + 1) / 10;
@@ -70,16 +71,19 @@ function newGame() {
   wavesManager = new WaveManager();
 }
 
+let i;
+
 function draw() {
   background(40);
   if (!isGameOver) {
     wavesManager.update();
-    let i = playerBullets.length;
+    i = playerBullets.length;
     while (i--) {
       playerBullets[i].update();
     }
-    for (const bullet of enemyBullets) {
-      bullet.update();
+    i = enemyBullets.length;
+    while (i--) {
+      enemyBullets[i].update();
     }
     player.update();
     for (const weapon of weapons) {
@@ -92,6 +96,7 @@ function draw() {
       experience.update();
     }
   }
+  circle(50, 50, 100);
 }
 
 function checkCollisionCircleRect(circ, rectangle) {
@@ -99,12 +104,12 @@ function checkCollisionCircleRect(circ, rectangle) {
   let closestX = constrain(
     circ.pos.x,
     rectangle.pos.x,
-    rectangle.pos.x + rectangle.w
+    rectangle.pos.x + rectangle.width
   );
   let closestY = constrain(
     circ.pos.y,
     rectangle.pos.y,
-    rectangle.pos.y + rectangle.h
+    rectangle.pos.y + rectangle.height
   );
 
   // Calculate the distance between the circle's center and the closest point in the rectangle
@@ -116,10 +121,10 @@ function checkCollisionCircleRect(circ, rectangle) {
 
 function checkCollisionRectRect(rec1, rec2) {
   if (
-    rec1.pos.x + rec1.w < rec2.pos.x ||
-    rec1.pos.x > rec2.pos.x + rec2.w ||
-    rec1.pos.y + rec1.h < rec2.pos.y ||
-    rec1.pos.y > rec2.pos.y + rec2.h
+    rec1.pos.x + rec1.width < rec2.pos.x ||
+    rec1.pos.x > rec2.pos.x + rec2.width ||
+    rec1.pos.y + rec1.height < rec2.pos.y ||
+    rec1.pos.y > rec2.pos.y + rec2.height
   ) {
     return false; // No collision
   } else {

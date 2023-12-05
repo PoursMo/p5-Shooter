@@ -15,14 +15,12 @@ class PlayerShip extends Ship {
     );
     this.hitbox = {
       pos: createVector(this.pos.x + 4, this.pos.y + 12),
-      w: this.sprite.width - 8,
-      h: this.sprite.height - 15,
+      width: this.sprite.width - 8,
+      height: this.sprite.height - 15,
     };
-    weapons.push(new Blaster(0.5, 5, 7));
   }
 
   update() {
-    // this.handleShoot();
     this.handleControls();
     this.direction.normalize();
     this.pos.add(this.direction.mult(this.speed));

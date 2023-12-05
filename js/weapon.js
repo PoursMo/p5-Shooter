@@ -35,17 +35,14 @@ class Weapon {
 class Blaster extends Weapon {
   constructor(fireDelay, bulletSize, bulletSpeed) {
     super(fireDelay, bulletSize, bulletSpeed);
-    this.bulletSpawns = new Array();
-  }
-
-  update() {
-    this.bulletSpawns[0] = createVector(player.sprite.width * 0.2, 5);
-    this.bulletSpawns[1] = createVector(player.sprite.width * 0.8, 5);
-    this.bulletSpawns[2] = createVector(player.sprite.width * 0.95, 5);
-    this.bulletSpawns[3] = createVector(player.sprite.width * 0.05, 5);
-    this.bulletSpawns[4] = createVector(player.sprite.width * 1.1, 5);
-    this.bulletSpawns[5] = createVector(player.sprite.width * -0.1, 5);
-    super.update();
+    this.bulletSpawns = new Array(
+      createVector(player.sprite.width * 0.2, 5),
+      createVector(player.sprite.width * 0.8, 5),
+      createVector(player.sprite.width * 0.95, 5),
+      createVector(player.sprite.width * 0.05, 5),
+      createVector(player.sprite.width * 1.1, 5),
+      createVector(player.sprite.width * -0.1, 5)
+    );
   }
 
   fire() {
@@ -62,7 +59,7 @@ class Blaster extends Weapon {
 
   levelUp() {
     super.levelUp();
-    if (this.level <= 3) {
+    if (this.bulletCount < this.bulletSpawns.length) {
       this.bulletCount += 2;
     } else {
       this.fireDelay /= 1 + 0.2;
@@ -71,8 +68,26 @@ class Blaster extends Weapon {
 }
 
 class Seeker extends Weapon {
-  fire() {
-    new SeekerBullet(this.pos.copy().add(this.bulletSpawns[0]), "player");
-    new SeekerBullet(this.pos.copy().add(this.bulletSpawns[1]), "player");
+  constructor(fireDelay, bulletSize, bulletSpeed) {
+    super(fireDelay, bulletSize, bulletSpeed);
+    this.bulletSpawns = new Array(
+      createVector(player.sprite.width * 0.2, 5),
+      createVector(player.sprite.width * 0.8, 5),
+      createVector(player.sprite.width * 0.95, 5),
+      createVector(player.sprite.width * 0.05, 5),
+      createVector(player.sprite.width * 1.1, 5),
+      createVector(player.sprite.width * -0.1, 5)
+    );
+  }
+
+  fire() {}
+
+  levelUp() {
+    super.levelUp();
+    if (this.bulletCount < this.bulletSpawns.length) {
+      this.bulletCount += 2;
+    } else {
+      this.fireDelay /= 1 + 0.2;
+    }
   }
 }

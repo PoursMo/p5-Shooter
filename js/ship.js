@@ -7,8 +7,8 @@ class Ship {
     this.pos = pos;
     this.hitbox = {
       pos: createVector(this.pos.x, this.pos.y + 10),
-      w: this.sprite.width,
-      h: this.sprite.height - 10,
+      width: this.sprite.width,
+      height: this.sprite.height - 10,
     };
   }
 
