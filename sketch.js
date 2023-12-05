@@ -3,6 +3,7 @@ let enemyBullets = new Array();
 let enemyShips = new Array();
 let waves = new Array();
 let experiences = new Array();
+let weapons = new Array();
 
 let player;
 let isGameOver = true;
@@ -60,6 +61,7 @@ function newGame() {
   enemyShips = new Array();
   waves = new Array();
   experiences = new Array();
+  weapons = new Array();
   player = new PlayerShip(playerSprite);
   for (let index = 0; index < enemyShips.length; index++) {
     const ship = enemyShips[index];
@@ -69,30 +71,20 @@ function newGame() {
 }
 
 function draw() {
-  background(50);
+  background(40);
   if (!isGameOver) {
     wavesManager.update();
-    for (const bullet of playerBullets) {
-      bullet.update();
-      for (const ship of enemyShips) {
-        if (checkCollisionCircleRect(bullet, ship.hitbox)) {
-          experiences.push(new Experience(ship.pos));
-          ship.destroy();
-          bullet.destroy();
-        }
-      }
+    let i = playerBullets.length;
+    while (i--) {
+      playerBullets[i].update();
     }
     for (const bullet of enemyBullets) {
       bullet.update();
-      for (const bullet of enemyBullets) {
-        if (checkCollisionCircleRect(bullet, player.hitbox)) {
-          if (player.getHit()) {
-            bullet.destroy();
-          }
-        }
-      }
     }
     player.update();
+    for (const weapon of weapons) {
+      weapon.update();
+    }
     for (const ship of enemyShips) {
       ship.update();
     }

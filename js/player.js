@@ -1,17 +1,10 @@
 class PlayerShip extends Ship {
-  #fireCooldown = false;
-  #shootTimer = 0;
   #lastHitTime = 0;
   health = 3;
   speed = 5;
-  fireDelay = 0.5;
-  bulletSize = 5;
-  bulletSpeed = 10;
-  bulletCount = 6;
   invulTime = 0.2;
   experience = 0;
   level = 1;
-  fireDelayGainPerLevel = 0.2;
   direction = createVector();
 
   constructor(sprite) {
@@ -20,23 +13,16 @@ class PlayerShip extends Ship {
       width / 2 - this.sprite.width / 2,
       height - this.size - 20
     );
-    this.bulletSpawns = new Array(
-      createVector(this.sprite.width * 0.20, 5),
-      createVector(this.sprite.width * 0.80, 5),
-      createVector(this.sprite.width * 0.95, 5),
-      createVector(this.sprite.width * 0.05, 5),
-      createVector(this.sprite.width * 1.10, 5),
-      createVector(this.sprite.width * -0.10, 5),
-    );
     this.hitbox = {
       pos: createVector(this.pos.x + 4, this.pos.y + 12),
       w: this.sprite.width - 8,
       h: this.sprite.height - 15,
     };
+    weapons.push(new Blaster(0.5, 5, 7));
   }
 
   update() {
-    this.handleShoot();
+    // this.handleShoot();
     this.handleControls();
     this.direction.normalize();
     this.pos.add(this.direction.mult(this.speed));
@@ -48,6 +34,7 @@ class PlayerShip extends Ship {
 
   show() {
     super.show();
+    // UI
     push();
     stroke(255, 0, 0);
     fill(0, 255, 0);
@@ -60,36 +47,14 @@ class PlayerShip extends Ship {
     textSize(15);
     text("health : " + this.health, width / 2, 20);
     text("level : " + this.level, width - 30, 20);
-    this.showTime();
+    text(
+      floor((millis() - timeGameStart) / 1000 / 60) +
+        ":" +
+        floor(((millis() - timeGameStart) / 1000) % 60),
+      width / 2,
+      35
+    );
     pop();
-  }
-
-  handleShoot() {
-    if (millis() - this.#shootTimer >= this.fireDelay * 1000) {
-      this.#fireCooldown = false;
-    }
-    if (!this.#fireCooldown) {
-      this.shoot();
-      this.#fireCooldown = true;
-      this.#shootTimer = millis();
-    }
-  }
-
-  shoot() {
-    for (let index = 0; index < this.bulletCount; index++) {
-      new Bullet(
-        this.pos.copy().add(this.bulletSpawns[index]),
-        createVector(0, -1),
-        "player",
-        this.bulletSpeed,
-        this.bulletSize
-      );
-    }
-  }
-
-  shootSeekers() {
-    new SeekerBullet(this.pos.copy().add(this.bulletSpawns[0]), "player");
-    new SeekerBullet(this.pos.copy().add(this.bulletSpawns[1]), "player");
   }
 
   boundsCollision() {
@@ -129,11 +94,7 @@ class PlayerShip extends Ship {
 
   levelUp() {
     this.level++;
-    if (this.level === 2 || this.level === 4 || this.level > 5) {
-      this.fireDelay /= 1 + this.fireDelayGainPerLevel;
-    } else if (this.level === 3 || this.level === 5) {
-      this.bulletCount += 2;
-    }
+    weapons[random(weapons.length - 1)].levelUp();
   }
 
   handleControls() {
@@ -160,15 +121,5 @@ class PlayerShip extends Ship {
     //Space
     if (keyIsDown(32)) {
     }
-  }
-
-  showTime() {
-    text(
-      floor((millis() - timeGameStart) / 1000 / 60) +
-        ":" +
-        floor(((millis() - timeGameStart) / 1000) % 60),
-      width / 2,
-      35
-    );
   }
 }

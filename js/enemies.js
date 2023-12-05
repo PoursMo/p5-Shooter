@@ -71,7 +71,7 @@ class EnemyShip extends Ship {
   destroy() {
     this.destroyed = true;
     enemyShips.splice(
-      enemyShips.findIndex((x) => x === this),
+      enemyShips.indexOf(this),
       1
     );
   }

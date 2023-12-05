@@ -16,6 +16,21 @@ class Bullet {
     this.vel.normalize();
     this.vel.mult(this.speed);
     this.pos.add(this.vel);
+    if (this.type === "player") {
+      for (const ship of enemyShips) {
+        if (checkCollisionCircleRect(this, ship.hitbox)) {
+          experiences.push(new Experience(ship.pos));
+          ship.destroy();
+          this.destroy();
+        }
+      }
+    } else if (this.type === "enemy") {
+      if (checkCollisionCircleRect(this, player.hitbox)) {
+        if (player.getHit()) {
+          this.destroy();
+        }
+      }
+    }
     if (this.pos.y < -20) {
       this.destroy();
       //
@@ -30,12 +45,11 @@ class Bullet {
 
   show() {
     push();
+    noStroke();
     if (this.type === "player") {
-      fill(255, 255, 0);
-      stroke(255);
+      fill(50, 50, 255);
     } else if (this.type === "enemy") {
-      fill(255, 0, 0);
-      stroke(255, 0, 0);
+      fill(255, 50, 50);
     }
     circle(this.pos.x, this.pos.y, this.size);
     pop();
@@ -43,15 +57,9 @@ class Bullet {
 
   destroy() {
     if (this.type === "player") {
-      playerBullets.splice(
-        playerBullets.findIndex((x) => x === this),
-        1
-      );
+      playerBullets.splice(playerBullets.indexOf(this), 1);
     } else if (this.type === "enemy") {
-      enemyBullets.splice(
-        enemyBullets.findIndex((x) => x === this),
-        1
-      );
+      enemyBullets.splice(enemyBullets.indexOf(this), 1);
     }
   }
 }
