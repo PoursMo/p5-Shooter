@@ -1,0 +1,4 @@
+*.txt
+p5/p5.js
+p5/p5.sound.js
+Builds/

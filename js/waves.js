@@ -1,5 +1,5 @@
 class WaveManager {
-  wavesToSpawn = new Array();
+  waveOptions = new Array();
 
   constructor() {
     this.wavesToSpawn.push(
