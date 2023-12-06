@@ -1,7 +1,6 @@
 class WaveManager {
   totalWeightOptions = 0;
   weightTarget;
-  currentWeight = 0;
 
   constructor() {
     this.waveOptions = new Array(
@@ -17,19 +16,21 @@ class WaveManager {
   }
 
   update() {
-    this.currentWeight = 0;
+    this.predictedEnemyCount = enemyShips.length;
     for (const wave of waves) {
       wave.update();
-      this.currentWeight += wave.weight;
+      this.predictedEnemyCount += wave.enemyCountTarget;
     }
-    if (millis() - timeGameStart < 10 * 1000) {
-      this.weightTarget = 10;
+    this.t = millis() - timeGameStart;
+    if (this.t < 30 * 1000) {
+      this.weightTarget = 0;
+    } else if (this.t < 60 * 1000) {
+      this.weightTarget = 15;
     }
-    if (this.currentWeight < this.weightTarget) {
+    if (this.predictedEnemyCount < this.weightTarget) {
       this.rWave = this.pickRandomWaveBasedOnWeight();
       if (!this.rWave.isOngoing) {
         this.rWave.start();
-        this.currentWeight += this.rWave.weight;
       }
     }
   }
@@ -60,7 +61,6 @@ class Wave {
     this.delayBetweenSpawns = delayBetweenSpawns;
     //TO IMPROVE
     this.weight = enemyCountTarget * (enemyType + 1);
-    print(this.weight);
   }
 
   update() {

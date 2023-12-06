@@ -36,11 +36,13 @@ function setup() {
 
 function ShowPlayButton() {
   if (playButton === undefined) {
+    let d = createDiv();
+    d.addClass("wrapper");
     playButton = createButton("Play");
     playButton.style("font-size", "35px");
-    playButton.class("p5Canvas");
+    playButton.parent(d);
     playButton.size(150, 70);
-    playButton.center();
+    // playButton.center();
     playButton.mouseClicked(newGame);
   } else {
     playButton.show();
@@ -64,7 +66,8 @@ function newGame() {
   experiences = new Array();
   weapons = new Array();
   player = new PlayerShip(playerSprite);
-  weapons.push(new BulletBlaster(0.5, 5, 7));
+  weapons.push(new BulletBlaster(0.5, 7, 7));
+  weapons.push(new SeekerThrower(3, 7));
   for (let index = 0; index < enemyShips.length; index++) {
     const ship = enemyShips[index];
     ship.direction.x = (index + 1) / 10;
@@ -101,16 +104,8 @@ function draw() {
 
 function checkCollisionCircleRect(circ, rectangle) {
   // Find the closest point in the rectangle to the circle
-  let closestX = constrain(
-    circ.pos.x,
-    rectangle.pos.x,
-    rectangle.pos.x + rectangle.width
-  );
-  let closestY = constrain(
-    circ.pos.y,
-    rectangle.pos.y,
-    rectangle.pos.y + rectangle.height
-  );
+  let closestX = constrain(circ.pos.x, rectangle.pos.x, rectangle.pos.x + rectangle.width);
+  let closestY = constrain(circ.pos.y, rectangle.pos.y, rectangle.pos.y + rectangle.height);
 
   // Calculate the distance between the circle's center and the closest point in the rectangle
   let distance = dist(circ.pos.x, circ.pos.y, closestX, closestY);

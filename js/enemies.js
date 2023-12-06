@@ -1,7 +1,7 @@
 class EnemyShip extends Ship {
   #fireCooldown = false;
   #shootTimer = 0;
-  bulletSize = 5;
+  bulletSize = 7;
   bulletSpeed = 4;
   speed = 2;
 

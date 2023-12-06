@@ -63,31 +63,33 @@ class Bullet {
 }
 
 class SeekerBullet extends Bullet {
-  constructor(positionOffset, type) {
-    super(positionOffset, createVector(), type, 1, 5);
+  constructor(positionOffset, type, size) {
+    super(positionOffset, createVector(), type, 1, size);
     this.target = enemyShips[floor(random(enemyShips.length))];
     this.targetVector = createVector();
   }
 
   update() {
-    if (this.target === undefined) {
-      this.vel = p5.Vector.random2D();
-    } else {
-      this.targetVector.x = random(this.target.hitbox.pos.x, this.target.hitbox.w);
-      this.targetVector.y = random(this.target.hitbox.pos.y, this.target.hitbox.h);
-      this.vel = this.targetVector.sub(this.pos);
-      this.lerpModifier =
-        dist(this.pos.x, this.pos.y, this.target.pos.x, this.target.pos.y) > 100 ? 0.01 : 0.5;
-      this.speed = lerp(this.speed, 10, this.lerpModifier);
+    this.speed = lerp(this.speed, 50, 0.001);
+    if (enemyShips.length === 0 && this.target === undefined) {
+      this.target = { pos: p5.Vector.random2D(width,) };
+      print(this.target);
+    } else if (this.target === undefined) {
+      //|| enemyShips.indexOf(this.target)
+      this.target = enemyShips[round(random(enemyShips.length - 1))];
     }
+    // print(enemyShips.indexOf(this.target));
+    this.vel = this.pos.copy().sub(this.target.pos);
     super.update();
   }
 
   show() {
     push();
+    noStroke();
     fill(50, 50, 255);
-    stroke(255);
     circle(this.pos.x, this.pos.y, this.size);
+    fill(50, 255, 50);
+    circle(this.pos.x, this.pos.y, this.size * 0.5);
     pop();
   }
 }

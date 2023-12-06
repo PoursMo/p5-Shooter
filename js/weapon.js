@@ -28,7 +28,6 @@ class Weapon {
 
   levelUp() {
     this.level++;
-    print("leveled " + this.constructor.name);
   }
 }
 
@@ -77,7 +76,15 @@ class SeekerThrower extends Weapon {
     );
   }
 
-  fire() {}
+  fire() {
+    for (let index = 0; index < this.projectileCount; index++) {
+      new SeekerBullet(
+        player.pos.copy().add(this.weaponSpawnOffset[index]),
+        "player",
+        this.projectileSize
+      );
+    }
+  }
 
   levelUp() {
     super.levelUp();
@@ -111,7 +118,6 @@ class LaserGun extends Weapon {
     super.levelUp();
     if (this.fireDelay > this.laserDuration) {
       this.fireDelay = (this.fireDelay - this.laserDuration) / (1 + 0.1) + this.laserDuration;
-      print(this.fireDelay);
     }
   }
 }
