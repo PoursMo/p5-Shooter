@@ -9,10 +9,7 @@ class PlayerShip extends Ship {
 
   constructor(sprite) {
     super(sprite, 0, 0, 35);
-    this.pos = createVector(
-      width / 2 - this.sprite.width / 2,
-      height - this.size - 20
-    );
+    this.pos = createVector(width / 2 - this.sprite.width / 2, height - this.size - 20);
     this.hitbox = {
       pos: createVector(this.pos.x + 4, this.pos.y + 12),
       width: this.sprite.width - 8,

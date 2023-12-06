@@ -18,20 +18,22 @@ class Bullet {
           experiences.push(new Experience(ship.pos));
           ship.destroy();
           this.destroy();
+          return;
         }
       }
     } else if (this.type === "enemy") {
       if (checkCollisionCircleRect(this, player.hitbox)) {
         if (player.getHit()) {
           this.destroy();
+          return;
         }
       }
     }
     if (this.isOutOfBounds()) {
       this.destroy();
-    } else {
-      this.show();
+      return;
     }
+    this.show();
   }
 
   isOutOfBounds() {
@@ -71,19 +73,11 @@ class SeekerBullet extends Bullet {
     if (this.target === undefined) {
       this.vel = p5.Vector.random2D();
     } else {
-      this.targetVector.x = random(
-        this.target.hitbox.pos.x,
-        this.target.hitbox.w
-      );
-      this.targetVector.y = random(
-        this.target.hitbox.pos.y,
-        this.target.hitbox.h
-      );
+      this.targetVector.x = random(this.target.hitbox.pos.x, this.target.hitbox.w);
+      this.targetVector.y = random(this.target.hitbox.pos.y, this.target.hitbox.h);
       this.vel = this.targetVector.sub(this.pos);
       this.lerpModifier =
-        dist(this.pos.x, this.pos.y, this.target.pos.x, this.target.pos.y) > 100
-          ? 0.01
-          : 0.5;
+        dist(this.pos.x, this.pos.y, this.target.pos.x, this.target.pos.y) > 100 ? 0.01 : 0.5;
       this.speed = lerp(this.speed, 10, this.lerpModifier);
     }
     super.update();
@@ -115,6 +109,7 @@ class Laser {
   update() {
     if (millis() - this.creationTime >= this.duration * 1000) {
       this.destroy();
+      return;
     }
     if (this.#expandTimer < this.expandDuration * 1000) {
       this.height -= height / ((this.expandDuration * 1000) / deltaTime);

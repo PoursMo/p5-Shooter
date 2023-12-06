@@ -1,136 +1,90 @@
 class WaveManager {
-  waveOptions = new Array();
+  totalWeightOptions = 0;
+  weightTarget;
+  currentWeight = 0;
 
   constructor() {
-    this.wavesToSpawn.push(
-      new Wave(5, createVector(-50, -50), createVector(1, 1),0 , 1, 0)
+    this.waveOptions = new Array(
+      new Wave(createVector(-50, -50), createVector(1, 1), 5, 0, 1),
+      new Wave(createVector(width + 50, -50), createVector(-1, 1), 5, 0, 1),
+      new Wave(createVector(width * 0.25, -50), createVector(0, 1), 5, 0, 1),
+      new Wave(createVector(width * 0.5, -50), createVector(0, 1), 5, 0, 1),
+      new Wave(createVector(width * 0.75, -50), createVector(0, 1), 5, 0, 1)
     );
-    this.wavesToSpawn.push(
-      new Wave(5, createVector(width + 50, -50), createVector(-1, 1), 5, 1, 0)
-    );
-    this.wavesToSpawn.push(
-      new Wave(4, createVector(-50, -50), createVector(1, 1), 10, 1, 0)
-    );
-    this.wavesToSpawn.push(
-      new Wave(4, createVector(width + 50, -50), createVector(-1, 0), 10, 1, 0)
-    );
-    this.wavesToSpawn.push(
-      new Wave(10, createVector(-40, -50), createVector(1, 1), 15, 0.5, 0)
-    );
-    this.wavesToSpawn.push(
-      new Wave(
-        10,
-        createVector(width + 30, -50),
-        createVector(-1, 1),
-        15,
-        0.5,
-        1
-      )
-    );
-    this.wavesToSpawn.push(
-      new Wave(
-        10,
-        createVector(width + 30, -50),
-        createVector(-1, 1),
-        25,
-        0.2,
-        1
-      )
-    );
-    this.wavesToSpawn.push(
-      new Wave(10, createVector(-40, -50), createVector(1, 1), 30, 0.2, 0)
-    );
-    this.wavesToSpawn.push(
-      new Wave(1, createVector(width * 0, -50), createVector(0, 1), 35, 0, 1)
-    );
-    this.wavesToSpawn.push(
-      new Wave(1, createVector(width * 0.1, -50), createVector(0, 1), 35, 0, 0)
-    );
-    this.wavesToSpawn.push(
-      new Wave(1, createVector(width * 0.2, -50), createVector(0, 1), 35, 0, 1)
-    );
-    this.wavesToSpawn.push(
-      new Wave(1, createVector(width * 0.3, -50), createVector(0, 1), 35, 0, 0)
-    );
-    this.wavesToSpawn.push(
-      new Wave(1, createVector(width * 0.4, -50), createVector(0, 1), 35, 0, 1)
-    );
-    this.wavesToSpawn.push(
-      new Wave(1, createVector(width * 0.5, -50), createVector(0, 1), 35, 0, 0)
-    );
-    this.wavesToSpawn.push(
-      new Wave(1, createVector(width * 0.6, -50), createVector(0, 1), 35, 0, 1)
-    );
-    this.wavesToSpawn.push(
-      new Wave(1, createVector(width * 0.7, -50), createVector(0, 1), 35, 0, 0)
-    );
-    this.wavesToSpawn.push(
-      new Wave(1, createVector(width * 0.8, -50), createVector(0, 1), 35, 0, 1)
-    );
-    this.wavesToSpawn.push(
-      new Wave(1, createVector(width * 0.9, -50), createVector(0, 1), 35, 0, 0)
-    );
+    for (const wave of this.waveOptions) {
+      this.totalWeightOptions += wave.weight;
+    }
   }
 
   update() {
-    for (const waveToSpawn of this.wavesToSpawn) {
-      if (millis() - timeGameStart >= waveToSpawn.waveAppearanceTimer * 1000) {
-        waves.push(waveToSpawn);
-        this.wavesToSpawn.splice(
-          this.wavesToSpawn.findIndex((x) => x === waveToSpawn),
-          1
-        );
-      }
-    }
+    this.currentWeight = 0;
     for (const wave of waves) {
       wave.update();
+      this.currentWeight += wave.weight;
+    }
+    if (millis() - timeGameStart < 10 * 1000) {
+      this.weightTarget = 10;
+    }
+    if (this.currentWeight < this.weightTarget) {
+      this.rWave = this.pickRandomWaveBasedOnWeight();
+      if (!this.rWave.isOngoing) {
+        this.rWave.start();
+        this.currentWeight += this.rWave.weight;
+      }
+    }
+  }
+
+  pickRandomWaveBasedOnWeight() {
+    this.w = 0;
+    this.r = random(0, this.totalWeightOptions);
+    for (const wave of this.waveOptions) {
+      this.w += wave.weight;
+      if (this.r < this.w) {
+        return wave;
+      }
     }
   }
 }
 
 class Wave {
-  enemyCount = 0;
-  lastSpawnTimer = 0;
+  #enemyCount = 0;
+  #lastSpawnTimer = 0;
+  #endTimer = 0;
+  isOngoing = false;
 
-  constructor(
-    enemyCountTarget,
-    spawnPos,
-    direction,
-    waveAppearanceTimer,
-    delay = 1,
-    enemyType
-  ) {
-    this.enemyCountTarget = enemyCountTarget;
+  constructor(spawnPos, direction, enemyCountTarget, enemyType, delayBetweenSpawns) {
     this.spawnPos = spawnPos;
     this.direction = direction;
-    this.waveAppearanceTimer = waveAppearanceTimer;
-    this.delay = delay;
+    this.enemyCountTarget = enemyCountTarget;
     this.enemyType = enemyType;
+    this.delayBetweenSpawns = delayBetweenSpawns;
+    //TO IMPROVE
+    this.weight = enemyCountTarget * (enemyType + 1);
+    print(this.weight);
   }
 
   update() {
     if (
-      this.enemyCount < this.enemyCountTarget &&
-      millis() - this.lastSpawnTimer >= this.delay * 1000
+      this.#enemyCount < this.enemyCountTarget &&
+      millis() - this.#lastSpawnTimer >= this.delayBetweenSpawns * 1000
     ) {
-      enemyShips.push(
-        new EnemyShip(
-          this.spawnPos.copy(),
-          this.direction.copy(),
-          this.enemyType
-        )
-      );
-      this.lastSpawnTimer = millis();
-      this.enemyCount++;
-    } else if (this.enemyCount >= this.enemyCountTarget) {
+      enemyShips.push(new EnemyShip(this.spawnPos.copy(), this.direction.copy(), this.enemyType));
+      this.#lastSpawnTimer = millis();
+      this.#enemyCount++;
+    } else if (this.#enemyCount >= this.enemyCountTarget) {
       this.destroy();
     }
   }
 
+  start() {
+    waves.push(this);
+    this.isOngoing = true;
+    this.#enemyCount = 0;
+    this.#lastSpawnTimer = 0;
+  }
+
   destroy() {
-    waves.splice(
-      waves.findIndex((x) => x === this),
-      1
-    );
+    this.isOngoing = false;
+    waves.splice(waves.indexOf(this), 1);
   }
 }

@@ -8,10 +8,7 @@ class Experience {
   }
 
   update() {
-    this.lerpModifier =
-      dist(this.pos.x, this.pos.y, player.pos.x, player.pos.y) > 100
-        ? 0.01
-        : 0.1;
+    this.lerpModifier = dist(this.pos.x, this.pos.y, player.pos.x, player.pos.y) > 100 ? 0.01 : 0.1;
     this.speed = lerp(this.speed, 10, this.lerpModifier);
     this.dir.x = player.pos.x + player.sprite.width / 2;
     this.dir.y = player.pos.y + player.sprite.height / 2;
@@ -34,9 +31,6 @@ class Experience {
   }
 
   destroy() {
-    experiences.splice(
-      experiences.findIndex((x) => x === this),
-      1
-    );
+    experiences.splice(experiences.indexOf(this), 1);
   }
 }

@@ -102,12 +102,7 @@ class LaserGun extends Weapon {
   fire() {
     for (let index = 0; index < this.projectileCount; index++) {
       lasers.push(
-        new Laser(
-          this.weaponSpawnOffset[index],
-          "player",
-          this.projectileSize,
-          this.laserDuration
-        )
+        new Laser(this.weaponSpawnOffset[index], "player", this.projectileSize, this.laserDuration)
       );
     }
   }
@@ -115,8 +110,7 @@ class LaserGun extends Weapon {
   levelUp() {
     super.levelUp();
     if (this.fireDelay > this.laserDuration) {
-      this.fireDelay =
-        (this.fireDelay - this.laserDuration) / (1 + 0.1) + this.laserDuration;
+      this.fireDelay = (this.fireDelay - this.laserDuration) / (1 + 0.1) + this.laserDuration;
       print(this.fireDelay);
     }
   }

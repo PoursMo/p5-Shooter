@@ -4,7 +4,6 @@ class EnemyShip extends Ship {
   bulletSize = 5;
   bulletSpeed = 4;
   speed = 2;
-  destroyed = false;
 
   //enemyTypes :
   //0 = shoots straight
@@ -46,10 +45,7 @@ class EnemyShip extends Ship {
       shootDir = player.pos.copy().sub(this.pos);
     }
     new Bullet(
-      createVector(
-        this.pos.x + 0.5 * this.sprite.width,
-        this.pos.y + this.sprite.height
-      ),
+      createVector(this.pos.x + 0.5 * this.sprite.width, this.pos.y + this.sprite.height),
       shootDir,
       "enemy",
       this.bulletSpeed,
@@ -69,11 +65,7 @@ class EnemyShip extends Ship {
   }
 
   destroy() {
-    this.destroyed = true;
-    enemyShips.splice(
-      enemyShips.indexOf(this),
-      1
-    );
+    enemyShips.splice(enemyShips.indexOf(this), 1);
   }
 }
 
