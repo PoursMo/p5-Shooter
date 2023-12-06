@@ -1,15 +1,11 @@
 class Bullet {
-  constructor(position, direction, type, speed = 1, size = 5) {
-    this.pos = position;
+  constructor(positionOffset, direction, type, speed = 1, size = 5) {
+    this.pos = positionOffset;
     this.vel = direction;
     this.size = size;
     this.type = type;
     this.speed = speed;
-    if (this.type === "player") {
-      playerBullets.push(this);
-    } else if (this.type === "enemy") {
-      enemyBullets.push(this);
-    }
+    bullets.push(this);
   }
 
   update() {
@@ -40,10 +36,10 @@ class Bullet {
 
   isOutOfBounds() {
     return (
-      this.pos.x < -20 ||
-      this.pos.x + this.size > width ||
-      this.pos.y < -20 ||
-      this.pos.y + this.size > height
+      this.pos.x - this.size / 2 < -20 ||
+      this.pos.x + this.size / 2 > width ||
+      this.pos.y - this.size / 2 < -20 ||
+      this.pos.y + this.size / 2 > height
     );
   }
 
@@ -60,17 +56,13 @@ class Bullet {
   }
 
   destroy() {
-    if (this.type === "player") {
-      playerBullets.splice(playerBullets.indexOf(this), 1);
-    } else if (this.type === "enemy") {
-      enemyBullets.splice(enemyBullets.indexOf(this), 1);
-    }
+    bullets.splice(bullets.indexOf(this), 1);
   }
 }
 
 class SeekerBullet extends Bullet {
-  constructor(position, type) {
-    super(position, createVector(), type, 1, 5);
+  constructor(positionOffset, type) {
+    super(positionOffset, createVector(), type, 1, 5);
     this.target = enemyShips[floor(random(enemyShips.length))];
     this.targetVector = createVector();
   }
@@ -103,5 +95,62 @@ class SeekerBullet extends Bullet {
     stroke(255);
     circle(this.pos.x, this.pos.y, this.size);
     pop();
+  }
+}
+
+class Laser {
+  height = 0;
+  expandDuration = 1;
+  #expandTimer = 0;
+  #windUpEffectSize;
+
+  constructor(positionOffset, type, width, duration) {
+    this.posOffset = positionOffset;
+    this.type = type;
+    this.width = width;
+    this.duration = duration + this.expandDuration;
+    this.creationTime = millis();
+  }
+
+  update() {
+    if (millis() - this.creationTime >= this.duration * 1000) {
+      this.destroy();
+    }
+    if (this.#expandTimer < this.expandDuration * 1000) {
+      this.height -= height / ((this.expandDuration * 1000) / deltaTime);
+      this.#expandTimer += deltaTime;
+    }
+    if (this.type === "player") {
+      this.pos = player.pos.copy().add(this.posOffset);
+      for (const ship of enemyShips) {
+        if (checkCollisionRectRect(this, ship.hitbox)) {
+          experiences.push(new Experience(ship.pos));
+          ship.destroy();
+        }
+      }
+    }
+    this.show();
+  }
+
+  show() {
+    push();
+    noStroke();
+    fill(50, 50, 255);
+    rect(this.pos.x, this.pos.y, this.width, this.height);
+    if (this.#expandTimer < this.expandDuration * 1000) {
+      circle(this.pos.x + this.width / 2, this.pos.y, this.#windUpEffectSize);
+      this.#windUpEffectSize = constrain(
+        50 - (50 * this.#expandTimer) / (this.expandDuration * 1000),
+        this.width + 5,
+        50
+      );
+    } else {
+      circle(this.pos.x + this.width / 2, this.pos.y, this.#windUpEffectSize);
+    }
+    pop();
+  }
+
+  destroy() {
+    lasers.splice(lasers.indexOf(this), 1);
   }
 }

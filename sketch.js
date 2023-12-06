@@ -1,5 +1,5 @@
-let playerBullets = new Array();
-let enemyBullets = new Array();
+let bullets = new Array();
+let lasers = new Array();
 let enemyShips = new Array();
 let waves = new Array();
 let experiences = new Array();
@@ -56,14 +56,15 @@ function newGame() {
   playButton.hide();
   isGameOver = false;
   timeGameStart = millis();
-  playerBullets = new Array();
+  bullets = new Array();
+  lasers = new Array();
   enemyBullets = new Array();
   enemyShips = new Array();
   waves = new Array();
   experiences = new Array();
   weapons = new Array();
   player = new PlayerShip(playerSprite);
-  weapons.push(new Blaster(0.5, 5, 7));
+  weapons.push(new BulletBlaster(0.5, 5, 7));
   for (let index = 0; index < enemyShips.length; index++) {
     const ship = enemyShips[index];
     ship.direction.x = (index + 1) / 10;
@@ -77,13 +78,12 @@ function draw() {
   background(40);
   if (!isGameOver) {
     wavesManager.update();
-    i = playerBullets.length;
+    i = bullets.length;
     while (i--) {
-      playerBullets[i].update();
+      bullets[i].update();
     }
-    i = enemyBullets.length;
-    while (i--) {
-      enemyBullets[i].update();
+    for (const laser of lasers) {
+      laser.update();
     }
     player.update();
     for (const weapon of weapons) {
@@ -96,7 +96,7 @@ function draw() {
       experience.update();
     }
   }
-  circle(50, 50, 100);
+  // circle(50, 50, 100);
 }
 
 function checkCollisionCircleRect(circ, rectangle) {
@@ -120,7 +120,29 @@ function checkCollisionCircleRect(circ, rectangle) {
 }
 
 function checkCollisionRectRect(rec1, rec2) {
-  if (
+  if (rec1.height < 0) {
+    if (
+      rec1.pos.x + rec1.width < rec2.pos.x ||
+      rec1.pos.x > rec2.pos.x + rec2.width ||
+      rec1.pos.y < rec2.pos.y ||
+      height + rec1.height - rec1.pos.y > rec2.pos.y + rec2.height
+    ) {
+      return false; // No collision
+    } else {
+      return true; // Collision
+    }
+  } else if (rec2.height < 0) {
+    if (
+      rec1.pos.x + rec1.width < rec2.pos.x ||
+      rec1.pos.x > rec2.pos.x + rec2.width ||
+      rec1.pos.y + rec1.height < height + rec2.height - rec2.pos.y ||
+      rec1.pos.y > rec2.pos.y
+    ) {
+      return false; // No collision
+    } else {
+      return true; // Collision
+    }
+  } else if (
     rec1.pos.x + rec1.width < rec2.pos.x ||
     rec1.pos.x > rec2.pos.x + rec2.width ||
     rec1.pos.y + rec1.height < rec2.pos.y ||

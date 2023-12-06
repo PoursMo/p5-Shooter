@@ -92,7 +92,10 @@ class PlayerShip extends Ship {
 
   levelUp() {
     this.level++;
-    weapons[random(weapons.length - 1)].levelUp();
+    weapons[round(random(weapons.length - 1))].levelUp();
+    if (this.level === 3) {
+      weapons.push(new LaserGun(5, 10, 4));
+    }
   }
 
   handleControls() {
