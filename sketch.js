@@ -67,7 +67,6 @@ function newGame() {
   weapons = new Array();
   player = new PlayerShip(playerSprite);
   weapons.push(new BulletBlaster(0.5, 7, 7));
-  weapons.push(new SeekerThrower(3, 7));
   for (let index = 0; index < enemyShips.length; index++) {
     const ship = enemyShips[index];
     ship.direction.x = (index + 1) / 10;

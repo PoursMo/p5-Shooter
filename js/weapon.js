@@ -71,8 +71,10 @@ class SeekerThrower extends Weapon {
   constructor(fireDelay, projectileSize) {
     super(fireDelay, projectileSize);
     this.weaponSpawnOffset = new Array(
-      createVector(player.sprite.width * 0.2, 5),
-      createVector(player.sprite.width * 0.8, 5)
+      createVector(0, player.sprite.height * 0.5),
+      createVector(player.sprite.width, player.sprite.height * 0.5),
+      createVector(0, player.sprite.height * 0.9),
+      createVector(player.sprite.width, player.sprite.height * 0.9)
     );
   }
 
@@ -91,7 +93,7 @@ class SeekerThrower extends Weapon {
     if (this.projectileCount < this.weaponSpawnOffset.length) {
       this.projectileCount += 2;
     } else {
-      this.fireDelay /= 1 + 0.2;
+      this.fireDelay /= 1 + 0.1;
     }
   }
 }

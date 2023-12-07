@@ -42,13 +42,11 @@ class PlayerShip extends Ship {
     textSize(15);
     text("health : " + this.health, width / 2, 20);
     text("level : " + this.level, width - 30, 20);
-    text(
-      floor((millis() - timeGameStart) / 1000 / 60) +
-        ":" +
-        floor(((millis() - timeGameStart) / 1000) % 60),
-      width / 2,
-      35
-    );
+    this.minutes = floor((millis() - timeGameStart) / 1000 / 60);
+    if (this.minutes < 10) this.minutes = "0" + this.minutes;
+    this.seconds = floor(((millis() - timeGameStart) / 1000) % 60);
+    if (this.seconds < 10) this.seconds = "0" + this.seconds;
+    text(this.minutes + ":" + this.seconds, width / 2, 35);
     pop();
   }
 
@@ -89,10 +87,15 @@ class PlayerShip extends Ship {
 
   levelUp() {
     this.level++;
-    weapons[round(random(weapons.length - 1))].levelUp();
-    if (this.level === 3) {
-      weapons.push(new LaserGun(5, 10, 4));
+    switch (this.level) {
+      case 3:
+        weapons.push(new SeekerThrower(3, 7));
+        return;
+      case 5:
+        weapons.push(new LaserGun(5, 10, 4));
+        return;
     }
+    weapons[round(random(weapons.length - 1))].levelUp();
   }
 
   handleControls() {

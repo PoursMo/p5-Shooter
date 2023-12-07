@@ -23,9 +23,11 @@ class WaveManager {
     }
     this.t = millis() - timeGameStart;
     if (this.t < 30 * 1000) {
-      this.weightTarget = 0;
+      this.weightTarget = 10;
     } else if (this.t < 60 * 1000) {
       this.weightTarget = 15;
+    } else if (this.t < 90 * 1000) {
+      this.weightTarget = 100;
     }
     if (this.predictedEnemyCount < this.weightTarget) {
       this.rWave = this.pickRandomWaveBasedOnWeight();

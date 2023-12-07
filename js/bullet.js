@@ -38,10 +38,10 @@ class Bullet {
 
   isOutOfBounds() {
     return (
-      this.pos.x - this.size / 2 < -20 ||
-      this.pos.x + this.size / 2 > width ||
-      this.pos.y - this.size / 2 < -20 ||
-      this.pos.y + this.size / 2 > height
+      this.pos.x - this.size / 2 < -100 ||
+      this.pos.x + this.size / 2 > width + 100 ||
+      this.pos.y - this.size / 2 < -100 ||
+      this.pos.y + this.size / 2 > height + 100
     );
   }
 
@@ -71,15 +71,18 @@ class SeekerBullet extends Bullet {
 
   update() {
     this.speed = lerp(this.speed, 50, 0.001);
-    if (enemyShips.length === 0 && this.target === undefined) {
-      this.target = { pos: p5.Vector.random2D(width,) };
-      print(this.target);
-    } else if (this.target === undefined) {
-      //|| enemyShips.indexOf(this.target)
-      this.target = enemyShips[round(random(enemyShips.length - 1))];
+    if (enemyShips.indexOf(this.target) === -1) {
+      this.target = undefined;
     }
-    // print(enemyShips.indexOf(this.target));
-    this.vel = this.pos.copy().sub(this.target.pos);
+    if (this.target === undefined) {
+      this.target = enemyShips[round(random(enemyShips.length - 1))];
+    } else {
+      this.targetVector = createVector(
+        this.target.hitbox.pos.x + this.target.hitbox.width / 2,
+        this.target.hitbox.pos.y + this.target.hitbox.height / 2
+      );
+    }
+    this.vel = this.targetVector.copy().sub(this.pos);
     super.update();
   }
 
