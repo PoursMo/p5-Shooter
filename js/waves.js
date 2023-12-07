@@ -4,11 +4,20 @@ class WaveManager {
 
   constructor() {
     this.waveOptions = new Array(
-      new Wave(createVector(-50, -50), createVector(1, 1), 5, 0, 1),
-      new Wave(createVector(width + 50, -50), createVector(-1, 1), 5, 0, 1),
-      new Wave(createVector(width * 0.25, -50), createVector(0, 1), 5, 0, 1),
-      new Wave(createVector(width * 0.5, -50), createVector(0, 1), 5, 0, 1),
-      new Wave(createVector(width * 0.75, -50), createVector(0, 1), 5, 0, 1)
+      //top left to down right
+      new Wave(createVector(-50, -50), createVector(1, 1), 5, Hawk, 1),
+      //top right to down left
+      new Wave(createVector(width + 50, -50), createVector(-1, 1), 5, Hawk, 1),
+      //top right to down left
+      new Wave(createVector(width + 50, -50), createVector(-1, 1), 5, Raven, 1),
+      //top right to down left
+      new Wave(createVector(width + 50, -50), createVector(-1, 1), 5, Raven, 1),
+      //top left straight down
+      new Wave(createVector(width * 0.25, -50), createVector(0, 1), 5, Pathfinder, 1),
+      //top middle straight down
+      new Wave(createVector(width * 0.5, -50), createVector(0, 1), 5, Pathfinder, 1),
+      //top right straight down
+      new Wave(createVector(width * 0.75, -50), createVector(0, 1), 5, Pathfinder, 1)
     );
     for (const wave of this.waveOptions) {
       this.totalWeightOptions += wave.weight;
@@ -52,7 +61,6 @@ class WaveManager {
 class Wave {
   #enemyCount = 0;
   #lastSpawnTimer = 0;
-  #endTimer = 0;
   isOngoing = false;
 
   constructor(spawnPos, direction, enemyCountTarget, enemyType, delayBetweenSpawns) {
@@ -62,7 +70,7 @@ class Wave {
     this.enemyType = enemyType;
     this.delayBetweenSpawns = delayBetweenSpawns;
     //TO IMPROVE
-    this.weight = enemyCountTarget * (enemyType + 1);
+    this.weight = enemyCountTarget;
   }
 
   update() {
@@ -70,7 +78,9 @@ class Wave {
       this.#enemyCount < this.enemyCountTarget &&
       millis() - this.#lastSpawnTimer >= this.delayBetweenSpawns * 1000
     ) {
-      enemyShips.push(new EnemyShip(this.spawnPos.copy(), this.direction.copy(), this.enemyType));
+      enemyShips.push(
+        new this.enemyType(this.spawnPos.copy(), this.direction.copy(), this.enemyType)
+      );
       this.#lastSpawnTimer = millis();
       this.#enemyCount++;
     } else if (this.#enemyCount >= this.enemyCountTarget) {

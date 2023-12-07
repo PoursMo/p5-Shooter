@@ -63,17 +63,14 @@ class PlayerShip extends Ship {
     }
   }
 
-  getHit() {
+  getHit(value) {
     if (millis() - this.#lastHitTime >= this.invulTime * 1000) {
-      this.health--;
+      this.health -= value;
       background(255, 0, 0);
       this.#lastHitTime = millis();
       if (this.health <= 0) {
         gameOver();
       }
-      return true;
-    } else {
-      return false;
     }
   }
 

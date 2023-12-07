@@ -1,4 +1,5 @@
 class Bullet {
+  damage = 1;
   constructor(positionOffset, direction, type, speed = 1, size = 5) {
     this.pos = positionOffset;
     this.vel = direction;
@@ -15,18 +16,16 @@ class Bullet {
     if (this.type === "player") {
       for (const ship of enemyShips) {
         if (checkCollisionCircleRect(this, ship.hitbox)) {
-          experiences.push(new Experience(ship.pos));
-          ship.destroy();
+          ship.getHit(this.damage);
           this.destroy();
           return;
         }
       }
     } else if (this.type === "enemy") {
       if (checkCollisionCircleRect(this, player.hitbox)) {
-        if (player.getHit()) {
-          this.destroy();
-          return;
-        }
+        player.getHit(this.damage);
+        this.destroy();
+        return;
       }
     }
     if (this.isOutOfBounds()) {
@@ -38,10 +37,10 @@ class Bullet {
 
   isOutOfBounds() {
     return (
-      this.pos.x - this.size / 2 < -100 ||
-      this.pos.x + this.size / 2 > width + 100 ||
-      this.pos.y - this.size / 2 < -100 ||
-      this.pos.y + this.size / 2 > height + 100
+      this.pos.x < -100 ||
+      this.pos.x > width + 100 ||
+      this.pos.y < -100 ||
+      this.pos.y > height + 100
     );
   }
 
@@ -63,6 +62,7 @@ class Bullet {
 }
 
 class SeekerBullet extends Bullet {
+  damage = 5;
   constructor(positionOffset, type, size) {
     super(positionOffset, createVector(), type, 1, size);
     this.target = enemyShips[floor(random(enemyShips.length))];
@@ -102,6 +102,7 @@ class Laser {
   expandDuration = 1;
   #expandTimer = 0;
   #windUpEffectSize;
+  damage = 10;
 
   constructor(positionOffset, type, width, duration) {
     this.posOffset = positionOffset;
@@ -124,8 +125,7 @@ class Laser {
       this.pos = player.pos.copy().add(this.posOffset);
       for (const ship of enemyShips) {
         if (checkCollisionRectRect(this, ship.hitbox)) {
-          experiences.push(new Experience(ship.pos));
-          ship.destroy();
+          ship.getHit(this.damage);
         }
       }
     }

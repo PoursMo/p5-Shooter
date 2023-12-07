@@ -13,7 +13,9 @@ let wavesManager;
 let shipsSpriteDown;
 let shipsSpriteUp;
 let playerSprite;
-let enemySprites = new Array();
+let pathfinderSprite;
+let ravenSprite;
+let hawkSprite;
 let bossSprite;
 let playButton;
 
@@ -26,8 +28,9 @@ function preload() {
 
 function setup() {
   playerSprite = shipsSpriteUp.get(63, 71, 129, 101);
-  enemySprites.push(shipsSpriteDown.get(335, 1611, 97, 137));
-  enemySprites.push(shipsSpriteDown.get(335, 1859, 97, 137));
+  hawkSprite = shipsSpriteDown.get(335, 1611, 97, 137);
+  ravenSprite = shipsSpriteDown.get(335, 1859, 97, 137);
+  pathfinderSprite = shipsSpriteDown.get(335, 855, 97, 85);
   bossSprite = shipsSpriteDown.get(283, 2359, 201, 165);
   createCanvas(400, 600);
   textAlign(CENTER, CENTER);
@@ -67,10 +70,10 @@ function newGame() {
   weapons = new Array();
   player = new PlayerShip(playerSprite);
   weapons.push(new BulletBlaster(0.5, 7, 7));
-  for (let index = 0; index < enemyShips.length; index++) {
-    const ship = enemyShips[index];
-    ship.direction.x = (index + 1) / 10;
-  }
+  // for (let index = 0; index < enemyShips.length; index++) {
+  //   const ship = enemyShips[index];
+  //   ship.direction.x = (index + 1) / 10;
+  // }
   wavesManager = new WaveManager();
 }
 
