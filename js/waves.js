@@ -9,9 +9,9 @@ class WaveManager {
       //top right to down left
       new Wave(createVector(width + 50, -50), createVector(-1, 1), 5, Hawk, 1),
       //top right to down left
-      new Wave(createVector(width + 50, -50), createVector(-1, 1), 5, Raven, 1),
+      new Wave(createVector(-20, -10), createVector(1, 0.25), 5, Raven, 1),
       //top right to down left
-      new Wave(createVector(width + 50, -50), createVector(-1, 1), 5, Raven, 1),
+      new Wave(createVector(width + 20, -10), createVector(-1, 0.25), 5, Raven, 1),
       //top left straight down
       new Wave(createVector(width * 0.25, -50), createVector(0, 1), 5, Pathfinder, 1),
       //top middle straight down

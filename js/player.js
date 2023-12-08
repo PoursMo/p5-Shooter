@@ -29,25 +29,6 @@ class PlayerShip extends Ship {
 
   show() {
     super.show();
-    // UI
-    push();
-    stroke(255, 0, 0);
-    fill(0, 255, 0);
-    stroke(0);
-    rect(0, 0, (this.experience * width) / 10, 10);
-    pop();
-    push();
-    noStroke();
-    fill(200);
-    textSize(15);
-    text("health : " + this.health, width / 2, 20);
-    text("level : " + this.level, width - 30, 20);
-    this.minutes = floor((millis() - timeGameStart) / 1000 / 60);
-    if (this.minutes < 10) this.minutes = "0" + this.minutes;
-    this.seconds = floor(((millis() - timeGameStart) / 1000) % 60);
-    if (this.seconds < 10) this.seconds = "0" + this.seconds;
-    text(this.minutes + ":" + this.seconds, width / 2, 35);
-    pop();
   }
 
   boundsCollision() {

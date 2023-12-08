@@ -18,12 +18,14 @@ let ravenSprite;
 let hawkSprite;
 let bossSprite;
 let playButton;
+let pixelFont;
 
-let showHitbox = true;
+let showHitbox = false;
 
 function preload() {
   shipsSpriteDown = loadImage("./assets/ships_looking_down.png");
   shipsSpriteUp = loadImage("./assets/ships_looking_up.png");
+  pixelFont = loadFont("./assets/retro_gaming.ttf");
 }
 
 function setup() {
@@ -34,27 +36,12 @@ function setup() {
   bossSprite = shipsSpriteDown.get(283, 2359, 201, 165);
   createCanvas(400, 600);
   textAlign(CENTER, CENTER);
-  ShowPlayButton();
-}
-
-function ShowPlayButton() {
-  if (playButton === undefined) {
-    let d = createDiv();
-    d.addClass("wrapper");
-    playButton = createButton("Play");
-    playButton.style("font-size", "35px");
-    playButton.parent(d);
-    playButton.size(150, 70);
-    // playButton.center();
-    playButton.mouseClicked(newGame);
-  } else {
-    playButton.show();
-  }
+  UI.showPlayButton();
 }
 
 function gameOver() {
   isGameOver = true;
-  ShowPlayButton();
+  UI.showPlayButton();
 }
 
 function newGame() {
@@ -70,10 +57,6 @@ function newGame() {
   weapons = new Array();
   player = new PlayerShip(playerSprite);
   weapons.push(new BulletBlaster(0.5, 7, 7));
-  // for (let index = 0; index < enemyShips.length; index++) {
-  //   const ship = enemyShips[index];
-  //   ship.direction.x = (index + 1) / 10;
-  // }
   wavesManager = new WaveManager();
 }
 
@@ -87,19 +70,21 @@ function draw() {
     while (i--) {
       bullets[i].update();
     }
-    for (const laser of lasers) {
-      laser.update();
-    }
     player.update();
     for (const weapon of weapons) {
       weapon.update();
     }
-    for (const ship of enemyShips) {
-      ship.update();
+    for (const laser of lasers) {
+      laser.update();
+    }
+    i = enemyShips.length;
+    while (i--) {
+      enemyShips[i].update();
     }
     for (const experience of experiences) {
       experience.update();
     }
+    UI.update();
   }
   // circle(50, 50, 100);
 }

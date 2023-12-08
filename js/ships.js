@@ -122,7 +122,7 @@ class Hawk extends EnemyShip {
 }
 
 class Pathfinder extends EnemyShip {
-  speed = 2.5;
+  speed = 3;
   health = 3;
 
   constructor(pos, direction) {

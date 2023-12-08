@@ -46,11 +46,12 @@ class Bullet {
 
   show() {
     push();
-    noStroke();
     if (this.type === "player") {
+      noStroke();
       fill(50, 50, 255);
     } else if (this.type === "enemy") {
       fill(255, 50, 50);
+      stroke(255, 150, 150);
     }
     circle(this.pos.x, this.pos.y, this.size);
     pop();
