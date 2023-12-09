@@ -1,4 +1,10 @@
-UI = {
+let UI = {
+  test: function () {
+    //BITE
+    this.bulletBlaserUI = createP();
+    this.bulletBlaserUI.addClass("weaponUI");
+    this.bulletBlaserUI.html("Blaster :<br>Fire Rate : " + 1 / weapons[0].fireDelay);
+  },
   update: function () {
     this.show();
   },
@@ -7,19 +13,6 @@ UI = {
     this.showHealth();
     this.showLevel();
     this.showTime();
-  },
-  showPlayButton: function () {
-    if (playButton === undefined) {
-      let d = createDiv();
-      d.addClass("wrapper");
-      playButton = createButton("Play");
-      playButton.style("font-size", "35px");
-      playButton.size(150, 70);
-      playButton.parent(d);
-      playButton.mouseClicked(newGame);
-    } else {
-      playButton.show();
-    }
   },
   showTime: function () {
     this.minutes = floor((millis() - timeGameStart) / 1000 / 60);
@@ -57,5 +50,18 @@ UI = {
     stroke(0);
     rect(0, 0, (player.experience * width) / 10, 10);
     pop();
+  },
+  showPlayButton: function () {
+    if (playButton === undefined) {
+      let d = createDiv();
+      d.addClass("wrapper");
+      playButton = createButton("Play");
+      playButton.style("font-size", "35px");
+      playButton.size(150, 70);
+      playButton.parent(d);
+      playButton.mouseClicked(newGame);
+    } else {
+      playButton.show();
+    }
   },
 };

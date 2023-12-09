@@ -1,6 +1,6 @@
 class Experience {
   speed = 1;
-  size = 1;
+  size = 3;
 
   constructor(position) {
     this.pos = position;
@@ -25,7 +25,7 @@ class Experience {
   show() {
     push();
     fill(0, 255, 0);
-    stroke(255);
+    noStroke();
     circle(this.pos.x, this.pos.y, this.size);
     pop();
   }

@@ -175,8 +175,30 @@ class Raven extends EnemyShip {
   }
 }
 
-class Boss extends Ship {
-  constructor(position) {
-    super(bossSprite, position, createVector(), 100);
+class Boss extends EnemyShip {
+  health = 1000;
+  speed = 0.5;
+
+  constructor() {
+    super(bossSprite, 0, createVector(0, 1), 250);
+    this.pos = createVector(width / 2 - this.sprite.width / 2, -this.sprite.height);
+    this.hitbox = {
+      pos: createVector(this.pos.x, this.pos.y),
+      width: this.sprite.width,
+      height: this.sprite.height,
+    };
+  }
+
+  update() {
+    if (this.pos.y < 0) {
+      this.direction.normalize();
+      this.pos.add(this.direction.mult(this.speed));
+      this.hitbox.pos.x = this.pos.x;
+      this.hitbox.pos.y = this.pos.y;
+    }
+    if (checkCollisionRectRect(this.hitbox, player.hitbox)) {
+      player.getHit(1);
+    }
+    this.show();
   }
 }

@@ -4,6 +4,7 @@ let enemyShips = new Array();
 let waves = new Array();
 let experiences = new Array();
 let weapons = new Array();
+let stars = new Array();
 
 let player;
 let isGameOver = true;
@@ -20,7 +21,7 @@ let bossSprite;
 let playButton;
 let pixelFont;
 
-let showHitbox = false;
+let showHitbox = true;
 
 function preload() {
   shipsSpriteDown = loadImage("./assets/ships_looking_down.png");
@@ -29,6 +30,7 @@ function preload() {
 }
 
 function setup() {
+  // frameRate(20);
   playerSprite = shipsSpriteUp.get(63, 71, 129, 101);
   hawkSprite = shipsSpriteDown.get(335, 1611, 97, 137);
   ravenSprite = shipsSpriteDown.get(335, 1859, 97, 137);
@@ -37,6 +39,10 @@ function setup() {
   createCanvas(400, 600);
   textAlign(CENTER, CENTER);
   UI.showPlayButton();
+  player = new PlayerShip(playerSprite);
+  for (let index = 0; index < 50; index++) {
+    stars.push(new Star());
+  }
 }
 
 function gameOver() {
@@ -56,14 +62,18 @@ function newGame() {
   experiences = new Array();
   weapons = new Array();
   player = new PlayerShip(playerSprite);
-  weapons.push(new BulletBlaster(0.5, 7, 7));
+  player.levelUp();
   wavesManager = new WaveManager();
+  UI.test();
 }
 
 let i;
 
 function draw() {
-  background(40);
+  background(0);
+  for (const star of stars) {
+    star.update();
+  }
   if (!isGameOver) {
     wavesManager.update();
     i = bullets.length;
@@ -71,22 +81,22 @@ function draw() {
       bullets[i].update();
     }
     player.update();
+    i = enemyShips.length;
+    while (i--) {
+      enemyShips[i].update();
+    }
     for (const weapon of weapons) {
       weapon.update();
     }
     for (const laser of lasers) {
       laser.update();
     }
-    i = enemyShips.length;
-    while (i--) {
-      enemyShips[i].update();
-    }
     for (const experience of experiences) {
       experience.update();
     }
     UI.update();
+    soundsManager.update();
   }
-  // circle(50, 50, 100);
 }
 
 function checkCollisionCircleRect(circ, rectangle) {
@@ -133,5 +143,32 @@ function checkCollisionRectRect(rec1, rec2) {
     return false; // No collision
   } else {
     return true; // Collision
+  }
+}
+
+class Star {
+  constructor() {
+    this.initialize();
+    this.pos = createVector(random(width), random(-height, height));
+  }
+
+  initialize() {
+    this.pos = createVector(random(width), random(0, -height));
+    this.size = round(random(2, 5));
+    this.alpha = random(100, 200);
+    this.speed = map(this.size, 2, 5, 2, 4);
+  }
+  update() {
+    this.pos.y += this.speed;
+    if (this.pos.y > 600 + this.size) {
+      this.initialize();
+    }
+    this.show();
+  }
+  show() {
+    push();
+    fill(255, this.alpha);
+    circle(this.pos.x, this.pos.y, this.size);
+    pop();
   }
 }

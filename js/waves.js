@@ -35,9 +35,14 @@ class WaveManager {
       this.weightTarget = 10;
     } else if (this.t < 60 * 1000) {
       this.weightTarget = 15;
-    } else if (this.t < 90 * 1000) {
-      this.weightTarget = 100;
+    } else
+    if (this.t >= 60 * 1000 && this.weightTarget != 0) {
+      this.weightTarget = 0;
+      enemyShips.push(new Boss());
     }
+    //  else if (this.t < 90 * 1000) {
+    //   this.weightTarget = 100;
+    // }
     if (this.predictedEnemyCount < this.weightTarget) {
       this.rWave = this.pickRandomWaveBasedOnWeight();
       if (!this.rWave.isOngoing) {

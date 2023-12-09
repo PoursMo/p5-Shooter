@@ -4,7 +4,7 @@ class PlayerShip extends Ship {
   speed = 5;
   invulTime = 0.2;
   experience = 0;
-  level = 1;
+  level = 0;
   direction = createVector();
 
   constructor(sprite) {
@@ -21,7 +21,7 @@ class PlayerShip extends Ship {
     this.handleControls();
     this.direction.normalize();
     this.pos.add(this.direction.mult(this.speed));
-    this.boundsCollision();
+    this.#boundsCollision();
     this.hitbox.pos.x = this.pos.x + 4;
     this.hitbox.pos.y = this.pos.y + 12;
     this.show();
@@ -31,7 +31,7 @@ class PlayerShip extends Ship {
     super.show();
   }
 
-  boundsCollision() {
+  #boundsCollision() {
     if (this.pos.x < 0) {
       this.pos.x = 0;
     } else if (this.pos.x + this.sprite.width > width) {
@@ -66,6 +66,9 @@ class PlayerShip extends Ship {
   levelUp() {
     this.level++;
     switch (this.level) {
+      case 1:
+        weapons.push(new BulletBlaster(0.5, 7, 7));
+        return;
       case 3:
         weapons.push(new SeekerThrower(3, 7));
         return;
@@ -73,7 +76,9 @@ class PlayerShip extends Ship {
         weapons.push(new LaserGun(5, 10, 4));
         return;
     }
-    weapons[round(random(weapons.length - 1))].levelUp();
+    if (weapons.length > 0) {
+      weapons[round(random(weapons.length - 1))].levelUp();
+    }
   }
 
   handleControls() {
@@ -99,6 +104,7 @@ class PlayerShip extends Ship {
     }
     //Space
     if (keyIsDown(32)) {
+      this.levelUp();
     }
   }
 }

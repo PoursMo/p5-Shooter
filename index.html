@@ -7,7 +7,7 @@
 
     <title>P5 Shooter</title>
 
-    <p>Use WASD or ↑←↓→ to move</p>
+    <p class="tooltip">Use WASD or ↑←↓→ to move</p>
 
     <script src="./p5/p5.min.js"></script>
     <script src="./p5/p5.sound.min.js"></script>
@@ -20,6 +20,7 @@
     <script src="./js/experience.js"></script>
     <script src="./js/weapon.js"></script>
     <script src="./js/UI.js"></script>
+    <script src="./js/soundsManager.js"></script>
     <style>
       .wrapper {
         display: flex;
@@ -29,7 +30,16 @@
         position: relative;
       }
 
-      p {
+      .weaponUI {
+        font-size: 30px;
+        margin: auto;
+        position: absolute;
+        left: 20%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .tooltip {
         font-size: 30px;
         margin: auto;
         position: absolute;

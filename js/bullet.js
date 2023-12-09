@@ -48,9 +48,9 @@ class Bullet {
     push();
     if (this.type === "player") {
       noStroke();
-      fill(50, 50, 255);
+      fill(0, 0, 255);
     } else if (this.type === "enemy") {
-      fill(255, 50, 50);
+      fill(255, 0, 0);
       stroke(255, 150, 150);
     }
     circle(this.pos.x, this.pos.y, this.size);
@@ -103,7 +103,9 @@ class Laser {
   expandDuration = 1;
   #expandTimer = 0;
   #windUpEffectSize;
-  damage = 10;
+  damagePerSecond = 10;
+  damageRate = 0.2;
+  #lastHitTime = 0;
 
   constructor(positionOffset, type, width, duration) {
     this.posOffset = positionOffset;
@@ -124,9 +126,12 @@ class Laser {
     }
     if (this.type === "player") {
       this.pos = player.pos.copy().add(this.posOffset);
-      for (const ship of enemyShips) {
-        if (checkCollisionRectRect(this, ship.hitbox)) {
-          ship.getHit(this.damage);
+      if (millis() - this.#lastHitTime >= this.damageRate * 1000) {
+        for (const ship of enemyShips) {
+          if (checkCollisionRectRect(this, ship.hitbox)) {
+            ship.getHit(this.damagePerSecond * this.damageRate);
+            this.#lastHitTime = millis();
+          }
         }
       }
     }
