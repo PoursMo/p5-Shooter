@@ -1,9 +1,17 @@
 let UI = {
+  initialize: function () {
+    this.multipliersUI = createP();
+    this.multipliersUI.addClass("weaponUI");
+  },
   test: function () {
     //BITE
-    this.bulletBlaserUI = createP();
-    this.bulletBlaserUI.addClass("weaponUI");
-    this.bulletBlaserUI.html("Blaster :<br>Fire Rate : " + 1 / weapons[0].fireDelay);
+    this.multipliersUI.html(
+      "Fire rate: " +
+        round(playerStats.fireDelayMultiplier * 100) +
+        "%<br>Damage: " +
+        round(playerStats.damageMultiplier * 100) +
+        "%"
+    );
   },
   update: function () {
     this.show();
@@ -13,6 +21,18 @@ let UI = {
     this.showHealth();
     this.showLevel();
     this.showTime();
+    if (bossKilled) {
+      this.showEndGame();
+    }
+  },
+  showEndGame: function () {
+    push();
+    fill(255, 75, 75);
+    noStroke();
+    textFont(pixelFont);
+    textSize(40);
+    text("YOU WON\n(for now)\nEsc to restart", width / 2, height / 2);
+    pop();
   },
   showTime: function () {
     this.minutes = floor((millis() - timeGameStart) / 1000 / 60);
@@ -31,7 +51,11 @@ let UI = {
     fill(255, 50, 50);
     noStroke();
     textSize(20);
-    text("♥".repeat(player.health), width / 2, 20);
+    text(
+      "❤".repeat(playerStats.health) + "♡".repeat(playerStats.maxHealth - playerStats.health),
+      width / 2,
+      20
+    );
     pop();
   },
   showLevel: function () {
@@ -40,7 +64,7 @@ let UI = {
     noStroke();
     fill(200);
     textSize(15);
-    text("level : " + player.level, width - 70, 27);
+    text("level : " + playerStats.level, width - 70, 27);
     pop();
   },
   showExperience: function () {
@@ -48,7 +72,7 @@ let UI = {
     stroke(255, 0, 0);
     fill(0, 255, 0);
     stroke(0);
-    rect(0, 0, (player.experience * width) / 10, 10);
+    rect(0, 0, (playerStats.experience * width) / 10, 10);
     pop();
   },
   showPlayButton: function () {

@@ -4,9 +4,12 @@ let enemyShips = new Array();
 let waves = new Array();
 let experiences = new Array();
 let weapons = new Array();
+let pickUps = new Array();
 let stars = new Array();
+bossKilled = false;
 
 let player;
+let playerStats;
 let isGameOver = true;
 let timeGameStart;
 let wavesManager;
@@ -21,7 +24,7 @@ let bossSprite;
 let playButton;
 let pixelFont;
 
-let showHitbox = true;
+let showHitbox = false;
 
 function preload() {
   shipsSpriteDown = loadImage("./assets/ships_looking_down.png");
@@ -56,15 +59,16 @@ function newGame() {
   timeGameStart = millis();
   bullets = new Array();
   lasers = new Array();
-  enemyBullets = new Array();
   enemyShips = new Array();
   waves = new Array();
   experiences = new Array();
   weapons = new Array();
+  pickUps = new Array();
+  UI.initialize();
   player = new PlayerShip(playerSprite);
-  player.levelUp();
+  playerStats = new PlayerStats();
+  playerStats.levelUp();
   wavesManager = new WaveManager();
-  UI.test();
 }
 
 let i;
@@ -94,21 +98,24 @@ function draw() {
     for (const experience of experiences) {
       experience.update();
     }
+    for (const pickUp of pickUps) {
+      pickUp.update();
+    }
     UI.update();
     soundsManager.update();
-  }
+  } else player.show();
 }
 
-function checkCollisionCircleRect(circ, rectangle) {
+function checkCollisionCircleRect(circle, rectangle) {
   // Find the closest point in the rectangle to the circle
-  let closestX = constrain(circ.pos.x, rectangle.pos.x, rectangle.pos.x + rectangle.width);
-  let closestY = constrain(circ.pos.y, rectangle.pos.y, rectangle.pos.y + rectangle.height);
+  let closestX = constrain(circle.pos.x, rectangle.pos.x, rectangle.pos.x + rectangle.width);
+  let closestY = constrain(circle.pos.y, rectangle.pos.y, rectangle.pos.y + rectangle.height);
 
   // Calculate the distance between the circle's center and the closest point in the rectangle
-  let distance = dist(circ.pos.x, circ.pos.y, closestX, closestY);
+  let distance = dist(circle.pos.x, circle.pos.y, closestX, closestY);
 
   // Check if the distance is less than the circle's radius
-  return distance < circ.size / 2;
+  return distance < circle.size / 2;
 }
 
 function checkCollisionRectRect(rec1, rec2) {
@@ -143,6 +150,18 @@ function checkCollisionRectRect(rec1, rec2) {
     return false; // No collision
   } else {
     return true; // Collision
+  }
+}
+
+function checkCollisionCircleCircle(circle1, circle2) {
+  // Calculate the distance between the centers of the circles
+  let distance = dist(circle1.pos.x, circle1.pos.y, circle2.pos.x, circle2.pos.y);
+
+  // Check if the distance is less than the sum of their radii
+  if (distance < circle1.size / 2 + circle2.size / 2) {
+    return true; // Colliding
+  } else {
+    return false; // Not colliding
   }
 }
 

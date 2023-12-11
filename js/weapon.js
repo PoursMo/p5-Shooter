@@ -1,12 +1,16 @@
 class Weapon {
-  #fireCooldown = false;
-  #shootTimer = 0;
-  projectileCount = 2;
-  level = 1;
+  #fireCooldown = true;
+  shootTimer = 0;
 
-  constructor(fireDelay, projectileSize) {
-    this.fireDelay = fireDelay;
+  constructor(positionOffset, baseFireDelay, baseDamage, projectileSize, weaponOwner) {
+    this.posOffset = positionOffset;
+    this.baseFireDelay = baseFireDelay;
+    this.fireDelay = baseFireDelay;
+    this.baseDamage = baseDamage;
+    this.damage = baseDamage;
     this.projectileSize = projectileSize;
+    this.weaponOwner = weaponOwner;
+    this.type = weaponOwner.constructor.name === "PlayerShip" ? "player" : "enemy";
   }
 
   update() {
@@ -14,112 +18,97 @@ class Weapon {
   }
 
   handleFire() {
-    if (millis() - this.#shootTimer >= this.fireDelay * 1000) {
+    if (millis() - this.shootTimer >= this.fireDelay * 1000) {
       this.#fireCooldown = false;
     }
     if (!this.#fireCooldown) {
       this.fire();
       this.#fireCooldown = true;
-      this.#shootTimer = millis();
+      this.shootTimer = millis();
     }
   }
 
   fire() {}
 
-  levelUp() {
-    this.level++;
+  destroy() {
+    weapons.splice(weapons.indexOf(this), 1);
   }
 }
 
 class BulletBlaster extends Weapon {
-  constructor(fireDelay, projectileSize, bulletSpeed) {
-    super(fireDelay, projectileSize);
+  constructor(
+    positionOffset,
+    baseFireDelay,
+    baseDamage,
+    projectileSize,
+    bulletSpeed,
+    weaponOwner,
+    direction
+  ) {
+    super(positionOffset, baseFireDelay, baseDamage, projectileSize, weaponOwner);
     this.bulletSpeed = bulletSpeed;
-    this.weaponSpawnOffset = new Array(
-      createVector(player.sprite.width * 0.2, 5),
-      createVector(player.sprite.width * 0.8, 5),
-      createVector(player.sprite.width * 0.95, 5),
-      createVector(player.sprite.width * 0.05, 5),
-      createVector(player.sprite.width * 1.1, 5),
-      createVector(player.sprite.width * -0.1, 5)
-    );
+    switch (direction) {
+      case "up":
+        this.dir = createVector(0, -1);
+        break;
+      case "down":
+        this.dir = createVector(0, 1);
+        break;
+      case "atPlayer":
+        this.dir = player.pos.copy();
+        break;
+      default:
+        print("no dir");
+        break;
+    }
   }
 
   fire() {
-    for (let index = 0; index < this.projectileCount; index++) {
-      new Bullet(
-        player.pos.copy().add(this.weaponSpawnOffset[index]),
-        createVector(0, -1),
-        "player",
-        this.bulletSpeed,
-        this.projectileSize
-      );
-    }
-  }
-
-  levelUp() {
-    super.levelUp();
-    if (this.projectileCount < this.weaponSpawnOffset.length) {
-      this.projectileCount += 2;
-    } else {
-      this.fireDelay /= 1 + 0.2;
-    }
+    new Bullet(this.weaponOwner.pos.copy().add(this.posOffset), this);
   }
 }
 
 class SeekerThrower extends Weapon {
-  constructor(fireDelay, projectileSize) {
-    super(fireDelay, projectileSize);
-    this.weaponSpawnOffset = new Array(
-      createVector(0, player.sprite.height * 0.5),
-      createVector(player.sprite.width, player.sprite.height * 0.5),
-      createVector(0, player.sprite.height * 0.9),
-      createVector(player.sprite.width, player.sprite.height * 0.9)
-    );
+  constructor(positionOffset, baseFireDelay, baseDamage, projectileSize, weaponOwner) {
+    super(positionOffset, baseFireDelay, baseDamage, projectileSize, weaponOwner);
   }
 
   fire() {
-    for (let index = 0; index < this.projectileCount; index++) {
-      new SeekerBullet(
-        player.pos.copy().add(this.weaponSpawnOffset[index]),
-        "player",
-        this.projectileSize
-      );
-    }
-  }
-
-  levelUp() {
-    super.levelUp();
-    if (this.projectileCount < this.weaponSpawnOffset.length) {
-      this.projectileCount += 2;
-    } else {
-      this.fireDelay /= 1 + 0.1;
-    }
+    new SeekerBullet(this.weaponOwner.pos.copy().add(this.posOffset), this);
   }
 }
 
 class LaserGun extends Weapon {
-  constructor(fireDelay, projectileSize, laserDuration) {
-    super(fireDelay + laserDuration, projectileSize);
+  constructor(
+    baseFireDelay,
+    damagePerSecond,
+    tickRate,
+    projectileSize,
+    laserDuration,
+    weaponOwner,
+    direction
+  ) {
+    super(baseFireDelay + laserDuration, damagePerSecond, projectileSize, weaponOwner);
+    switch (direction) {
+      case "up":
+        this.dir = createVector(0, -1);
+        break;
+      case "down":
+        this.dir = createVector(0, 1);
+        break;
+      case "atPlayer":
+        this.dir = player.pos.copy().sub(this.posOffset);
+        break;
+      default:
+        break;
+    }
     this.laserDuration = laserDuration;
-    this.weaponSpawnOffset = new Array(
-      createVector(player.sprite.width * 0.2 - projectileSize, 5),
-      createVector(player.sprite.width * 0.8, 5)
-    );
+    this.tickRate = tickRate;
   }
 
   fire() {
-    for (let index = 0; index < this.projectileCount; index++) {
-      lasers.push(
-        new Laser(this.weaponSpawnOffset[index], "player", this.projectileSize, this.laserDuration)
-      );
-    }
-  }
-
-  levelUp() {
-    super.levelUp();
-    if (this.fireDelay > this.laserDuration) {
-      this.fireDelay = (this.fireDelay - this.laserDuration) / (1 + 0.1) + this.laserDuration;
-    }
+    lasers.push(
+      new Laser(this.spawnOffsets[index], this.type, this.projectileSize, this.laserDuration, this)
+    );
   }
 }

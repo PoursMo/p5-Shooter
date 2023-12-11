@@ -16,8 +16,9 @@ class Experience {
     this.dir.normalize();
     this.pos.add(this.dir.mult(this.speed));
     if (checkCollisionCircleRect(this, player.hitbox)) {
+      playerStats.gainExperience();
       this.destroy();
-      player.gainExperience();
+      return;
     }
     this.show();
   }

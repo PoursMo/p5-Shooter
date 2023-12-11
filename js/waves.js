@@ -35,8 +35,7 @@ class WaveManager {
       this.weightTarget = 10;
     } else if (this.t < 60 * 1000) {
       this.weightTarget = 15;
-    } else
-    if (this.t >= 60 * 1000 && this.weightTarget != 0) {
+    } else if (this.t >= 60 * 1000 && this.weightTarget != 0) {
       this.weightTarget = 0;
       enemyShips.push(new Boss());
     }

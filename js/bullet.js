@@ -1,18 +1,15 @@
-class Bullet {
-  damage = 1;
-  constructor(positionOffset, direction, type, speed = 1, size = 5) {
-    this.pos = positionOffset;
-    this.vel = direction;
-    this.size = size;
-    this.type = type;
-    this.speed = speed;
+class Projectile {
+  constructor(position, weapon) {
+    this.pos = position;
+    this.damage = weapon.damage;
+    this.size = weapon.projectileSize;
+    this.type = weapon.type;
+    this.speed = weapon.bulletSpeed;
+    this.weapon = weapon;
     bullets.push(this);
   }
 
   update() {
-    this.vel.normalize();
-    this.vel.mult(this.speed);
-    this.pos.add(this.vel);
     if (this.type === "player") {
       for (const ship of enemyShips) {
         if (checkCollisionCircleRect(this, ship.hitbox)) {
@@ -23,7 +20,7 @@ class Bullet {
       }
     } else if (this.type === "enemy") {
       if (checkCollisionCircleRect(this, player.hitbox)) {
-        player.getHit(this.damage);
+        playerStats.getHit(this.damage);
         this.destroy();
         return;
       }
@@ -32,6 +29,9 @@ class Bullet {
       this.destroy();
       return;
     }
+    this.dir.normalize();
+    this.dir.mult(this.speed);
+    this.pos.add(this.dir);
     this.show();
   }
 
@@ -62,57 +62,107 @@ class Bullet {
   }
 }
 
-class SeekerBullet extends Bullet {
-  damage = 5;
-  constructor(positionOffset, type, size) {
-    super(positionOffset, createVector(), type, 1, size);
-    this.target = enemyShips[floor(random(enemyShips.length))];
+class Bullet extends Projectile {
+  update() {
+    this.dir = this.weapon.dir.copy();
+    super.update();
+  }
+}
+
+class SeekerBullet extends Projectile {
+  constructor(position, weapon) {
+    super(position, weapon);
     this.targetVector = createVector();
+    this.speed = 2;
+    if (this.type === "player") {
+      if (enemyShips.length === 0) {
+        this.targetVector = createVector(random(width), -150);
+        this.target = 1;
+      } else {
+        this.target = enemyShips[round(random(enemyShips.length - 1))];
+      }
+    } else if (this.type === "enemy") {
+      this.target = player;
+    }
   }
 
   update() {
-    this.speed = lerp(this.speed, 50, 0.001);
-    if (enemyShips.indexOf(this.target) === -1) {
-      this.target = undefined;
+    if (this.type === "player") {
+      this.speed = lerp(this.speed, 50, 0.001);
+      //if target ship is dead
+      if (enemyShips.indexOf(this.target) === -1 && this.target != 1) {
+        //if there is no enemy ship
+        if (enemyShips.length === 0) {
+          if (this.pos.y > -100) {
+            this.targetVector = createVector(random(width), -150);
+            this.target = 1;
+          }
+        } else {
+          this.target = enemyShips[round(random(enemyShips.length - 1))];
+        }
+      }
+    } else if (this.type === "enemy") {
+      let i = bullets.length;
+      while (i--) {
+        if (bullets[i].type === "player") {
+          if (checkCollisionCircleCircle(bullets[i], this)) {
+            bullets[i].destroy();
+            this.destroy();
+            return;
+          }
+        }
+      }
     }
-    if (this.target === undefined) {
-      this.target = enemyShips[round(random(enemyShips.length - 1))];
-    } else {
-      this.targetVector = createVector(
-        this.target.hitbox.pos.x + this.target.hitbox.width / 2,
-        this.target.hitbox.pos.y + this.target.hitbox.height / 2
-      );
+    if (this.target != 1) {
+      this.setTargetVector();
     }
-    this.vel = this.targetVector.copy().sub(this.pos);
+    this.dir = this.targetVector.copy().sub(this.pos);
     super.update();
+  }
+
+  setTargetVector() {
+    this.targetVector = createVector(
+      this.target.hitbox.pos.x + this.target.hitbox.width / 2,
+      this.target.hitbox.pos.y + this.target.hitbox.height / 2
+    );
   }
 
   show() {
     push();
-    noStroke();
-    fill(50, 50, 255);
-    circle(this.pos.x, this.pos.y, this.size);
-    fill(50, 255, 50);
-    circle(this.pos.x, this.pos.y, this.size * 0.5);
+    if (this.type === "player") {
+      noStroke();
+      fill(50, 50, 255);
+      circle(this.pos.x, this.pos.y, this.size);
+      fill(50, 255, 255);
+      circle(this.pos.x, this.pos.y, this.size * 0.5);
+    } else if (this.type === "enemy") {
+      stroke(255, 150, 150);
+      fill(255, 50, 50);
+      circle(this.pos.x, this.pos.y, this.size);
+      noStroke();
+      fill(255, 255, 50);
+      circle(this.pos.x, this.pos.y, this.size * 0.5);
+    }
     pop();
   }
 }
 
 class Laser {
-  height = 0;
-  expandDuration = 1;
+  #height = 0;
+  #expandDuration = 1;
   #expandTimer = 0;
   #windUpEffectSize;
-  damagePerSecond = 10;
-  damageRate = 0.2;
   #lastHitTime = 0;
 
-  constructor(positionOffset, type, width, duration) {
+  constructor(positionOffset, weapon) {
     this.posOffset = positionOffset;
-    this.type = type;
-    this.width = width;
-    this.duration = duration + this.expandDuration;
+    this.dir = weapon.dir;
+    this.type = weapon.type;
+    this.width = weapon.projectileSize;
+    this.duration = weapon.duration + this.#expandDuration;
     this.creationTime = millis();
+    this.damagePerSecond = weapon.damage;
+    this.tickRate = weapon.tickRate;
   }
 
   update() {
@@ -120,16 +170,16 @@ class Laser {
       this.destroy();
       return;
     }
-    if (this.#expandTimer < this.expandDuration * 1000) {
-      this.height -= height / ((this.expandDuration * 1000) / deltaTime);
+    if (this.#expandTimer < this.#expandDuration * 1000) {
+      this.#height -= height / ((this.#expandDuration * 1000) / deltaTime);
       this.#expandTimer += deltaTime;
     }
     if (this.type === "player") {
       this.pos = player.pos.copy().add(this.posOffset);
-      if (millis() - this.#lastHitTime >= this.damageRate * 1000) {
+      if (millis() - this.#lastHitTime >= this.tickRate * 1000) {
         for (const ship of enemyShips) {
           if (checkCollisionRectRect(this, ship.hitbox)) {
-            ship.getHit(this.damagePerSecond * this.damageRate);
+            ship.getHit(this.damagePerSecond * this.tickRate);
             this.#lastHitTime = millis();
           }
         }
@@ -142,11 +192,11 @@ class Laser {
     push();
     noStroke();
     fill(50, 50, 255);
-    rect(this.pos.x, this.pos.y, this.width, this.height);
-    if (this.#expandTimer < this.expandDuration * 1000) {
+    rect(this.pos.x, this.pos.y, this.width, this.#height);
+    if (this.#expandTimer < this.#expandDuration * 1000) {
       circle(this.pos.x + this.width / 2, this.pos.y, this.#windUpEffectSize);
       this.#windUpEffectSize = constrain(
-        50 - (50 * this.#expandTimer) / (this.expandDuration * 1000),
+        50 - (50 * this.#expandTimer) / (this.#expandDuration * 1000),
         this.width + 5,
         50
       );
