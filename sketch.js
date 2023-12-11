@@ -102,7 +102,6 @@ function draw() {
       pickUp.update();
     }
     UI.update();
-    soundsManager.update();
   } else player.show();
 }
 
