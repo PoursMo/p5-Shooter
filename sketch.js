@@ -33,7 +33,7 @@ function preload() {
 }
 
 function setup() {
-  // frameRate(20);
+  frameRate(60);
   playerSprite = shipsSpriteUp.get(63, 71, 129, 101);
   hawkSprite = shipsSpriteDown.get(335, 1611, 97, 137);
   ravenSprite = shipsSpriteDown.get(335, 1859, 97, 137);

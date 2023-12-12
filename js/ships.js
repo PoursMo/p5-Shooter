@@ -53,7 +53,7 @@ class EnemyShip extends Ship {
       return;
     }
     if (checkCollisionRectRect(this.hitbox, player.hitbox)) {
-      this.destroy();
+      this.getHit(100);
       playerStats.getHit(1);
       experiences.push(new Experience(this.pos));
       return;
@@ -69,9 +69,9 @@ class EnemyShip extends Ship {
       if (random() < this.healthPickUpDropChance) {
         pickUps.push(new HealthPickUp(s.copy()));
       }
-      if (random() < this.bombPickUpDropChance) {
-        pickUps.push(new BombPickUp(s.copy()));
-      }
+      // if (random() < this.bombPickUpDropChance) {
+      pickUps.push(new BombPickUp(s.copy()));
+      // }
       this.destroy();
     }
   }

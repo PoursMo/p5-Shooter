@@ -1,46 +1,49 @@
 class PickUp {
   size = 20;
   speed = 1.5;
-  #lastChangeDirectionTime = millis();
-  changeDirectionTimer = 3;
+  dir = p5.Vector.random2D();
 
   constructor(position) {
     this.pos = position;
+    //check if out of bounds and put back in canvas
+    if (this.pos.x - this.size < 0) {
+      this.pos.x = 0 + this.size;
+    } else if (this.pos.x + this.size > width) {
+      this.pos.x = width - this.size;
+    }
+    if (this.pos.y - this.size < 0) {
+      this.pos.y = 0 + this.size;
+    } else if (this.pos.y + this.size > height) {
+      this.pos.y = height - this.size;
+    }
   }
 
   update() {
-    if (millis() - this.#lastChangeDirectionTime >= this.changeDirectionTimer * 1000) {
-      this.dir = p5.Vector.random2D();
-      this.dir.normalize();
-      this.dir.mult(this.speed);
-      this.#lastChangeDirectionTime = millis();
-    }
+    this.dir.normalize();
+    this.dir.mult(this.speed);
     this.pos.add(this.dir);
     if (checkCollisionCircleRect(this, player.hitbox)) {
       this.onPickUp();
       this.destroy();
       return;
     }
-    if (this.isOutOfBounds()) {
-      this.destroy();
-      return;
-    }
+    this.bounceOnBounds();
     this.show();
+  }
+
+  bounceOnBounds() {
+    if (this.pos.x + this.size / 2 > width || this.pos.x - this.size / 2 < 0) {
+      this.dir.x *= -1;
+    }
+    if (this.pos.y + this.size / 2 > height || this.pos.y - this.size / 2 < 0) {
+      this.dir.y *= -1;
+    }
   }
 
   show() {
     fill(255, 255, 50);
     noStroke();
     circle(this.pos.x, this.pos.y, this.size);
-  }
-
-  isOutOfBounds() {
-    return (
-      this.pos.x < -100 ||
-      this.pos.x > width + 100 ||
-      this.pos.y < -100 ||
-      this.pos.y > height + 100
-    );
   }
 
   destroy() {
