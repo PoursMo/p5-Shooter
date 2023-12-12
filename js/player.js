@@ -1,17 +1,17 @@
 class PlayerShip extends Ship {
   direction = createVector();
-  bulletBlasters = new Array();
-  seekerThrowers = new Array();
-  laserGuns = new Array();
-  baseSpeed = 4;
+  bulletBlaster;
+  seekerThrower;
+  laserGun;
+  baseSpeed = 5;
   speed = this.baseSpeed;
 
   constructor(sprite) {
     super(sprite, 0, 0, 35);
     this.health = this.maxHealth;
-    this.pos = createVector(width / 2 - this.sprite.width / 2, height - this.size - 20);
+    this.position = createVector(width / 2, height - this.size - 20);
     this.hitbox = {
-      pos: createVector(),
+      position: createVector(),
       width: this.sprite.width - 8,
       height: this.sprite.height - 15,
     };
@@ -20,10 +20,10 @@ class PlayerShip extends Ship {
   update() {
     this.handleControls();
     this.direction.normalize();
-    this.pos.add(this.direction.mult(this.speed));
+    this.position.add(this.direction.mult(this.speed));
     this.#boundsCollision();
-    this.hitbox.pos.x = this.pos.x + 4;
-    this.hitbox.pos.y = this.pos.y + 12;
+    this.hitbox.position.x = this.position.x;
+    this.hitbox.position.y = this.position.y + 6;
     this.show();
   }
 
@@ -32,16 +32,13 @@ class PlayerShip extends Ship {
   }
 
   #boundsCollision() {
-    if (this.pos.x < 0) {
-      this.pos.x = 0;
-    } else if (this.pos.x + this.sprite.width > width) {
-      this.pos.x = width - this.sprite.width;
-    }
-    if (this.pos.y < 0) {
-      this.pos.y = 0;
-    } else if (this.pos.y + this.sprite.height > height) {
-      this.pos.y = height - this.sprite.height;
-    }
+  // Calculate half-width and half-height for the rectangle
+  let w = this.sprite.width / 2;
+  let h = this.sprite.height / 2;
+
+  // Constrain the rectangle's position to stay within the canvas
+  this.position.x = constrain(this.position.x, w, width - w);
+  this.position.y = constrain(this.position.y, h, height - h);
   }
 
   handleControls() {
@@ -67,7 +64,7 @@ class PlayerShip extends Ship {
     }
     //Space
     if (keyIsDown(32)) {
-      // playerStats.levelUp();
+      playerStats.levelUp();
     }
     //Esc
     if (keyIsDown(27)) {
@@ -115,87 +112,37 @@ class PlayerStats {
     this.level++;
     this.damageMultiplier += 0.01;
     this.fireDelayMultiplier += 0.01;
-    this.updateStats();
     switch (this.level) {
       case 1:
-        player.bulletBlasters.push(
-          new BulletBlaster(createVector(player.sprite.width * 0.2, 5), 0.5, 1, 7, 7, player, "up")
-        );
-        weapons.push(player.bulletBlasters[player.bulletBlasters.length - 1]);
-        player.bulletBlasters.push(
-          new BulletBlaster(createVector(player.sprite.width * 0.8, 5), 0.5, 1, 7, 7, player, "up")
-        );
-        weapons.push(player.bulletBlasters[player.bulletBlasters.length - 1]);
-        return;
+        player.bulletBlaster = new PlayerBulletBlasters();
+        // weapons.push(player.bulletBlaster);
+        break;
       case 3:
-        player.bulletBlasters.push(
-          new BulletBlaster(createVector(player.sprite.width * 0.95, 5), 0.5, 1, 7, 7, player, "up")
-        );
-        weapons.push(player.bulletBlasters[player.bulletBlasters.length - 1]);
-        player.bulletBlasters.push(
-          new BulletBlaster(createVector(player.sprite.width * 0.05, 5), 0.5, 1, 7, 7, player, "up")
-        );
-        weapons.push(player.bulletBlasters[player.bulletBlasters.length - 1]);
-        return;
+        player.bulletBlaster.weaponCount += 2;
+        break;
       case 5:
-        player.bulletBlasters.push(
-          new BulletBlaster(createVector(player.sprite.width * 1.1, 5), 0.5, 1, 7, 7, player, "up")
-        );
-        weapons.push(player.bulletBlasters[player.bulletBlasters.length - 1]);
-        player.bulletBlasters.push(
-          new BulletBlaster(createVector(player.sprite.width * -0.1, 5), 0.5, 1, 7, 7, player, "up")
-        );
-        weapons.push(player.bulletBlasters[player.bulletBlasters.length - 1]);
-        return;
+        player.bulletBlaster.weaponCount += 2;
+        break;
       case 7:
-        player.seekerThrowers.push(
-          new SeekerThrower(createVector(0, player.sprite.height * 0.5), 3, 5, 7, player)
-        );
-        weapons.push(player.seekerThrowers[player.seekerThrowers.length - 1]);
-        player.seekerThrowers.push(
-          new SeekerThrower(
-            createVector(player.sprite.width, player.sprite.height * 0.5),
-            3,
-            5,
-            7,
-            player
-          )
-        );
-        weapons.push(player.seekerThrowers[player.seekerThrowers.length - 1]);
-        return;
+        player.seekerThrower = new PlayerSeekerThrowers();
+        // weapons.push(player.seekerThrower);
+        break;
       case 9:
-        player.seekerThrowers.push(
-          new SeekerThrower(createVector(0, player.sprite.height * 0.9), 3, 5, 7, player)
-        );
-        weapons.push(player.seekerThrowers[player.seekerThrowers.length - 1]);
-        player.seekerThrowers.push(
-          new SeekerThrower(
-            createVector(player.sprite.width, player.sprite.height * 0.9),
-            3,
-            5,
-            7,
-            player
-          )
-        );
-        weapons.push(player.seekerThrowers[player.seekerThrowers.length - 1]);
-        return;
+        player.seekerThrower.weaponCount += 2;
+        break;
       case 11:
-        // weapons.push(new LaserGun(5, 10, 0.2, 10, 4, player), "up");
-        // createVector(player.sprite.width * 0.2 - 10, 5),
-        // createVector(player.sprite.width * 0.8, 5)
-        return;
+        player.laserGun = new PlayerLaserGuns();
+        weapons.push(player.laserGun);
+        break;
     }
+    this.updateStats();
   }
 
   updateStats() {
-    for (const blaster of player.bulletBlasters) {
-      blaster.damage = blaster.baseDamage * this.damageMultiplier;
-      blaster.fireDelay = blaster.baseFireDelay / this.fireDelayMultiplier;
-    }
-    for (const thrower of player.seekerThrowers) {
-      thrower.damage = thrower.baseDamage * this.damageMultiplier;
-      thrower.fireDelay = thrower.baseFireDelay / this.fireDelayMultiplier;
-    }
+    player.bulletBlaster.damage = player.bulletBlaster.baseDamage * this.damageMultiplier;
+    player.bulletBlaster.fireDelay = player.bulletBlaster.baseFireDelay / this.fireDelayMultiplier;
+    // thrower.damage = thrower.baseDamage * this.damageMultiplier;
+    // thrower.fireDelay = thrower.baseFireDelay / this.fireDelayMultiplier;
     UI.test();
   }
 }

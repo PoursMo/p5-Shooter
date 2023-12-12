@@ -1,27 +1,27 @@
 class PickUp {
   size = 20;
   speed = 1.5;
-  dir = p5.Vector.random2D();
+  direction = p5.Vector.random2D();
 
   constructor(position) {
-    this.pos = position;
+    this.position = position;
     //check if out of bounds and put back in canvas
-    if (this.pos.x - this.size < 0) {
-      this.pos.x = 0 + this.size;
-    } else if (this.pos.x + this.size > width) {
-      this.pos.x = width - this.size;
+    if (this.position.x - this.size < 0) {
+      this.position.x = 0 + this.size;
+    } else if (this.position.x + this.size > width) {
+      this.position.x = width - this.size;
     }
-    if (this.pos.y - this.size < 0) {
-      this.pos.y = 0 + this.size;
-    } else if (this.pos.y + this.size > height) {
-      this.pos.y = height - this.size;
+    if (this.position.y - this.size < 0) {
+      this.position.y = 0 + this.size;
+    } else if (this.position.y + this.size > height) {
+      this.position.y = height - this.size;
     }
   }
 
   update() {
-    this.dir.normalize();
-    this.dir.mult(this.speed);
-    this.pos.add(this.dir);
+    this.direction.normalize();
+    this.direction.mult(this.speed);
+    this.position.add(this.direction);
     if (checkCollisionCircleRect(this, player.hitbox)) {
       this.onPickUp();
       this.destroy();
@@ -32,18 +32,18 @@ class PickUp {
   }
 
   bounceOnBounds() {
-    if (this.pos.x + this.size / 2 > width || this.pos.x - this.size / 2 < 0) {
-      this.dir.x *= -1;
+    if (this.position.x + this.size / 2 > width || this.position.x - this.size / 2 < 0) {
+      this.direction.x *= -1;
     }
-    if (this.pos.y + this.size / 2 > height || this.pos.y - this.size / 2 < 0) {
-      this.dir.y *= -1;
+    if (this.position.y + this.size / 2 > height || this.position.y - this.size / 2 < 0) {
+      this.direction.y *= -1;
     }
   }
 
   show() {
     fill(255, 255, 50);
     noStroke();
-    circle(this.pos.x, this.pos.y, this.size);
+    circle(this.position.x, this.position.y, this.size);
   }
 
   destroy() {
@@ -57,7 +57,7 @@ class HealthPickUp extends PickUp {
     super.show();
     textSize(this.size);
     fill(255, 50, 50);
-    text("♥", this.pos.x, this.pos.y);
+    text("♥", this.position.x, this.position.y);
     pop();
   }
 
@@ -72,7 +72,7 @@ class BombPickUp extends PickUp {
     super.show();
     textSize(this.size);
     fill(255, 50, 50);
-    text("B", this.pos.x, this.pos.y);
+    text("B", this.position.x, this.position.y);
     pop();
   }
 

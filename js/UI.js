@@ -1,7 +1,9 @@
 let UI = {
   initialize: function () {
-    this.multipliersUI = createP();
-    this.multipliersUI.addClass("weaponUI");
+    if (this.multipliersUI === undefined) {
+      this.multipliersUI = createP();
+      this.multipliersUI.addClass("weaponUI");
+    }
   },
   test: function () {
     //BITE

@@ -3,18 +3,20 @@ class Experience {
   size = 3;
 
   constructor(position) {
-    this.pos = position;
-    this.dir = createVector();
+    this.position = position;
+    this.direction = createVector();
   }
 
   update() {
-    this.lerpModifier = dist(this.pos.x, this.pos.y, player.pos.x, player.pos.y) > 100 ? 0.01 : 0.1;
+    this.lerpModifier =
+      dist(this.position.x, this.position.y, player.position.x, player.position.y) > 100
+        ? 0.01
+        : 0.1;
     this.speed = lerp(this.speed, 10, this.lerpModifier);
-    this.dir.x = player.pos.x + player.sprite.width / 2;
-    this.dir.y = player.pos.y + player.sprite.height / 2;
-    this.dir.sub(this.pos);
-    this.dir.normalize();
-    this.pos.add(this.dir.mult(this.speed));
+    this.direction = player.position.copy();
+    this.direction.sub(this.position);
+    this.direction.normalize();
+    this.position.add(this.direction.mult(this.speed));
     if (checkCollisionCircleRect(this, player.hitbox)) {
       playerStats.gainExperience();
       this.destroy();
@@ -27,7 +29,7 @@ class Experience {
     push();
     fill(0, 255, 0);
     noStroke();
-    circle(this.pos.x, this.pos.y, this.size);
+    circle(this.position.x, this.position.y, this.size);
     pop();
   }
 

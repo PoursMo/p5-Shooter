@@ -2,9 +2,8 @@
 - UI
 - better waves
 - better boss
-- lasers
 - close range weapon
-- pickup bounce
+- fix boss bullet bug
 
 - characters with different starting weapons + abilities ?
 - abilities :
@@ -12,4 +11,4 @@ shield ?
 dodge ?
 slow time ?
 
-git archive --format=zip --output Builds/Shooter_v0.05TEST.zip master
+git archive --format=zip --output Builds/Shooter_v0.05.zip master

@@ -1,12 +1,12 @@
 class Ship {
-  constructor(sprite, pos, direction, size = 40) {
+  constructor(sprite, position, direction, size = 40) {
     this.size = size;
     this.sprite = sprite;
     this.sprite.resize(0, this.size);
     this.direction = direction;
-    this.pos = pos;
+    this.position = position;
     this.hitbox = {
-      pos: createVector(this.pos.x, this.pos.y),
+      position: createVector(),
       width: this.sprite.width,
       height: this.sprite.height,
     };
@@ -14,18 +14,18 @@ class Ship {
 
   update() {
     this.direction.normalize();
-    this.pos.add(this.direction.mult(this.speed));
-    this.hitbox.pos.x = this.pos.x;
-    this.hitbox.pos.y = this.pos.y;
+    this.position.add(this.direction.mult(this.speed));
+    this.hitbox.position.x = this.position.x;
+    this.hitbox.position.y = this.position.y;
     this.show();
   }
 
   isOutOfBounds() {
     return (
-      this.pos.x > width + 100 ||
-      this.pos.x < -100 ||
-      this.pos.y > height + 100 ||
-      this.pos.y < -100
+      this.position.x > width + 100 ||
+      this.position.x < -100 ||
+      this.position.y > height + 100 ||
+      this.position.y < -100
     );
   }
 
@@ -34,10 +34,10 @@ class Ship {
       push();
       noFill();
       stroke(0, 255, 0);
-      rect(this.hitbox.pos.x, this.hitbox.pos.y, this.hitbox.width, this.hitbox.height);
+      rect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
       pop();
     }
-    image(this.sprite, this.pos.x, this.pos.y);
+    image(this.sprite, this.position.x, this.position.y);
   }
 }
 
@@ -55,7 +55,7 @@ class EnemyShip extends Ship {
     if (checkCollisionRectRect(this.hitbox, player.hitbox)) {
       this.getHit(100);
       playerStats.getHit(1);
-      experiences.push(new Experience(this.pos));
+      experiences.push(new Experience(this.position));
       return;
     }
   }
@@ -64,14 +64,13 @@ class EnemyShip extends Ship {
     this.hit = true;
     this.health -= value;
     if (this.health <= 0) {
-      let s = createVector(this.pos.x + this.sprite.width / 2, this.pos.y + this.sprite.height / 2);
-      experiences.push(new Experience(s.copy()));
+      experiences.push(new Experience(this.position.copy()));
       if (random() < this.healthPickUpDropChance) {
-        pickUps.push(new HealthPickUp(s.copy()));
+        pickUps.push(new HealthPickUp(this.position.copy()));
       }
-      // if (random() < this.bombPickUpDropChance) {
-      pickUps.push(new BombPickUp(s.copy()));
-      // }
+      if (random() < this.bombPickUpDropChance) {
+        pickUps.push(new BombPickUp(this.position.copy()));
+      }
       this.destroy();
     }
   }
@@ -95,10 +94,10 @@ class Hawk extends EnemyShip {
   speed = 2;
   health = 2;
 
-  constructor(pos, direction) {
-    super(hawkSprite, pos, direction);
+  constructor(position, direction) {
+    super(hawkSprite, position, direction);
     this.weapon = new BulletBlaster(
-      createVector(0.5 * this.sprite.width, this.sprite.height),
+      createVector(0, this.sprite.height / 2),
       random(0.9, 1.5),
       1,
       this.bulletSize,
@@ -119,8 +118,8 @@ class Pathfinder extends EnemyShip {
   speed = 3;
   health = 3;
 
-  constructor(pos, direction) {
-    super(pathfinderSprite, pos, direction, 30);
+  constructor(position, direction) {
+    super(pathfinderSprite, position, direction, 30);
   }
 }
 
@@ -130,10 +129,10 @@ class Raven extends EnemyShip {
   speed = 1.5;
   health = 2;
 
-  constructor(pos, direction) {
-    super(ravenSprite, pos, direction);
+  constructor(position, direction) {
+    super(ravenSprite, position, direction);
     this.weapon = new BulletBlaster(
-      createVector(0.5 * this.sprite.width, this.sprite.height),
+      createVector(0, this.sprite.height / 2),
       random(0.9, 1.5),
       1,
       this.bulletSize,
@@ -148,17 +147,6 @@ class Raven extends EnemyShip {
     this.weapon.destroy();
     super.destroy();
   }
-
-  shoot() {
-    this.shootDir = player.pos.copy().sub(this.pos);
-    new Bullet(
-      createVector(this.pos.x + 0.5 * this.sprite.width, this.pos.y + this.sprite.height),
-      this.shootDir,
-      "enemy",
-      this.bulletSpeed,
-      this.bulletSize
-    );
-  }
 }
 
 class Boss extends EnemyShip {
@@ -172,9 +160,9 @@ class Boss extends EnemyShip {
 
   constructor() {
     super(bossSprite, 0, createVector(0, 1), 250);
-    this.pos = createVector(width / 2 - this.sprite.width / 2, -this.sprite.height);
+    this.position = createVector(width / 2, -this.sprite.height);
     this.hitbox = {
-      pos: createVector(),
+      position: createVector(),
       width: this.sprite.width - 80,
       height: this.sprite.height - 80,
     };
@@ -223,11 +211,11 @@ class Boss extends EnemyShip {
   }
 
   update() {
-    if (this.pos.y < 0) {
+    if (this.position.y < 0) {
       this.direction.normalize();
-      this.pos.add(this.direction.mult(this.speed));
-      this.hitbox.pos.x = this.pos.x + 40;
-      this.hitbox.pos.y = this.pos.y + 40;
+      this.position.add(this.direction.mult(this.speed));
+      this.hitbox.position.x = this.position.x + 40;
+      this.hitbox.position.y = this.position.y + 40;
     }
     if (checkCollisionRectRect(this.hitbox, player.hitbox)) {
       playerStats.getHit(1);
@@ -290,7 +278,7 @@ class Boss extends EnemyShip {
       }
       this.#dirXModifier = lerp(this.#dirXModifier, this.#dirXModifierTarget, 0.01);
       for (const blaster of this.bulletBlasters) {
-        blaster.dir.x = this.#dirXModifier;
+        blaster.direction.x = this.#dirXModifier;
       }
     }
   }
