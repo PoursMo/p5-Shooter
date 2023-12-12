@@ -63,7 +63,7 @@ class PlayerSeekerThrowers extends Weapon {
   weaponCount = 2;
 
   constructor() {
-    super(undefined, 4, 5, 7, player);
+    super(undefined,4, 5, 7, player);
     this.positionOffsets = new Array(
       createVector(player.sprite.width / 2, -10),
       createVector(-player.sprite.width / 2, -10),

@@ -159,8 +159,8 @@ class Boss extends EnemyShip {
   seekerThrowers = new Array();
 
   constructor() {
-    super(bossSprite, 0, createVector(0, 1), 250);
-    this.position = createVector(width / 2, -this.sprite.height);
+    super(bossSprite, 0, createVector(0, 1), 300);
+    this.position = createVector(width / 2, -this.sprite.height / 2);
     this.hitbox = {
       position: createVector(),
       width: this.sprite.width - 80,
@@ -168,7 +168,7 @@ class Boss extends EnemyShip {
     };
     this.bulletBlasters.push(
       new BulletBlaster(
-        createVector(this.sprite.width * 0.74, this.sprite.height * 0.8),
+        createVector(this.sprite.width * 0.24, (this.sprite.height / 2) * 0.6),
         0.5,
         1,
         7,
@@ -179,7 +179,7 @@ class Boss extends EnemyShip {
     );
     this.bulletBlasters.push(
       new BulletBlaster(
-        createVector(this.sprite.width * 0.26, this.sprite.height * 0.8),
+        createVector(this.sprite.width * -0.24, (this.sprite.height / 2) * 0.6),
         0.5,
         1,
         7,
@@ -190,7 +190,7 @@ class Boss extends EnemyShip {
     );
     this.seekerThrowers.push(
       new SeekerThrower(
-        createVector(this.sprite.width * 0.74, this.sprite.height * 0.8),
+        createVector(this.sprite.width * 0.24, (this.sprite.height / 2) * 0.6),
         5,
         1,
         20,
@@ -199,7 +199,7 @@ class Boss extends EnemyShip {
     );
     this.seekerThrowers.push(
       new SeekerThrower(
-        createVector(this.sprite.width * 0.26, this.sprite.height * 0.8),
+        createVector(this.sprite.width * -0.24, (this.sprite.height / 2) * 0.6),
         5,
         1,
         20,
@@ -211,11 +211,11 @@ class Boss extends EnemyShip {
   }
 
   update() {
-    if (this.position.y < 0) {
+    if (this.position.y < this.sprite.height / 2) {
       this.direction.normalize();
       this.position.add(this.direction.mult(this.speed));
-      this.hitbox.position.x = this.position.x + 40;
-      this.hitbox.position.y = this.position.y + 40;
+      this.hitbox.position.x = this.position.x;
+      this.hitbox.position.y = this.position.y + 10;
     }
     if (checkCollisionRectRect(this.hitbox, player.hitbox)) {
       playerStats.getHit(1);

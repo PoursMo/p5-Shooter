@@ -91,6 +91,9 @@ function draw() {
     for (const weapon of weapons) {
       weapon.update();
     }
+    for (const pickUp of pickUps) {
+      pickUp.update();
+    }
     for (const laser of lasers) {
       laser.update();
     }
@@ -100,9 +103,6 @@ function draw() {
     }
     for (const experience of experiences) {
       experience.update();
-    }
-    for (const pickUp of pickUps) {
-      pickUp.update();
     }
     UI.update();
   } else player.show();

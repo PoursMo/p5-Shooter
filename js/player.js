@@ -32,13 +32,13 @@ class PlayerShip extends Ship {
   }
 
   #boundsCollision() {
-  // Calculate half-width and half-height for the rectangle
-  let w = this.sprite.width / 2;
-  let h = this.sprite.height / 2;
+    // Calculate half-width and half-height for the rectangle
+    let w = this.sprite.width / 2;
+    let h = this.sprite.height / 2;
 
-  // Constrain the rectangle's position to stay within the canvas
-  this.position.x = constrain(this.position.x, w, width - w);
-  this.position.y = constrain(this.position.y, h, height - h);
+    // Constrain the rectangle's position to stay within the canvas
+    this.position.x = constrain(this.position.x, w, width - w);
+    this.position.y = constrain(this.position.y, h, height - h);
   }
 
   handleControls() {
@@ -115,7 +115,7 @@ class PlayerStats {
     switch (this.level) {
       case 1:
         player.bulletBlaster = new PlayerBulletBlasters();
-        // weapons.push(player.bulletBlaster);
+        weapons.push(player.bulletBlaster);
         break;
       case 3:
         player.bulletBlaster.weaponCount += 2;
@@ -125,7 +125,7 @@ class PlayerStats {
         break;
       case 7:
         player.seekerThrower = new PlayerSeekerThrowers();
-        // weapons.push(player.seekerThrower);
+        weapons.push(player.seekerThrower);
         break;
       case 9:
         player.seekerThrower.weaponCount += 2;
