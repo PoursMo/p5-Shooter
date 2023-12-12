@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-- characters with different starting weapons + abilities ?
-- abilities :
-shield ?
-dodge ?
-slow time ?
 - sounds
 - UI
 - better waves
@@ -12,9 +6,10 @@ slow time ?
 - close range weapon
 - pickup bounce
 
+- characters with different starting weapons + abilities ?
+- abilities :
+shield ?
+dodge ?
+slow time ?
+
 git archive --format=zip --output Builds/Shooter_v0.05TEST.zip master
-=======
-- characters with abilities and different starting weapons
-- player weapons
-1 weapon per type
->>>>>>> 4f101d18956b8023557b66b97fbaba938e85dddb
