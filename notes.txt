@@ -2,8 +2,6 @@
 - UI
 - better waves
 - better boss
-- close range weapon
-- fix boss bullet bug
 
 - characters with different starting weapons + abilities ?
 - abilities :
@@ -12,3 +10,9 @@ dodge ?
 slow time ?
 
 git archive --format=zip --output Builds/Shooter_v0.05.zip master
+
+
+Credits :
+- morgan3d https://opengameart.org/content/2d-spaceship-sprites-with-engines
+- Tiao Ferreira https://opengameart.org/content/bubble-explosion
+- nightzero https://opengameart.org/content/2d-asteroid-sprite

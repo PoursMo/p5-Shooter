@@ -3,18 +3,18 @@ class PlayerShip extends Ship {
   bulletBlaster;
   seekerThrower;
   laserGun;
+  engines;
   baseSpeed = 5;
   speed = this.baseSpeed;
+  #lastHitTime = 0;
+  invulTime = 0.3;
+  damageable = new Damageable("enemy", "rectangle", playerStats.maxHealth, this);
 
   constructor(sprite) {
-    super(sprite, 0, 0, 35);
+    super(sprite, 0, 0);
     this.health = this.maxHealth;
-    this.position = createVector(width / 2, height - this.size - 20);
-    this.hitbox = {
-      position: createVector(),
-      width: this.sprite.width - 8,
-      height: this.sprite.height - 15,
-    };
+    this.position = createVector(width / 2, height - 60);
+    this.hitbox = new Hitbox("rectangle", this, createVector(0, 6), -8, -15);
   }
 
   update() {
@@ -22,13 +22,24 @@ class PlayerShip extends Ship {
     this.direction.normalize();
     this.position.add(this.direction.mult(this.speed));
     this.#boundsCollision();
-    this.hitbox.position.x = this.position.x;
-    this.hitbox.position.y = this.position.y + 6;
+    this.hitbox.update();
+    if (this.damageable.invulnerable && millis() - this.#lastHitTime >= this.invulTime * 1000) {
+      this.damageable.invulnerable = false;
+    }
+    this.damageable.update();
     this.show();
-  }
-
-  show() {
-    super.show();
+    if (this.bulletBlaster) {
+      this.bulletBlaster.update();
+    }
+    if (this.seekerThrower) {
+      this.seekerThrower.update();
+    }
+    if (this.laserGun) {
+      this.laserGun.update();
+    }
+    if (this.engines) {
+      this.engines.update();
+    }
   }
 
   #boundsCollision() {
@@ -39,6 +50,16 @@ class PlayerShip extends Ship {
     // Constrain the rectangle's position to stay within the canvas
     this.position.x = constrain(this.position.x, w, width - w);
     this.position.y = constrain(this.position.y, h, height - h);
+  }
+
+  onTakeDamage() {
+    spriteAnimations.push(new SpriteAnimation(bubbleExplosionSprites, this.position));
+    this.#lastHitTime = millis();
+    this.damageable.invulnerable = true;
+  }
+
+  onDeath() {
+    gameOver();
   }
 
   handleControls() {
@@ -64,7 +85,12 @@ class PlayerShip extends Ship {
     }
     //Space
     if (keyIsDown(32)) {
-      playerStats.levelUp();
+    }
+    //Right Shift
+    if (keyIsDown(16)) {
+      if (devMode) {
+        playerStats.levelUp();
+      }
     }
     //Esc
     if (keyIsDown(27)) {
@@ -75,30 +101,10 @@ class PlayerShip extends Ship {
 
 class PlayerStats {
   maxHealth = 5;
-  health = this.maxHealth;
-  invulTime = 0.2;
-  #lastHitTime = 0;
   experience = 0;
   level = 0;
   damageMultiplier = 1;
   fireDelayMultiplier = 1;
-
-  gainHealth() {
-    if (this.health < this.maxHealth) {
-      this.health++;
-    }
-  }
-
-  getHit(value) {
-    if (millis() - this.#lastHitTime >= this.invulTime * 1000) {
-      this.health -= value;
-      background(255, 0, 0);
-      this.#lastHitTime = millis();
-      if (this.health <= 0) {
-        gameOver();
-      }
-    }
-  }
 
   gainExperience() {
     this.experience++;
@@ -115,7 +121,6 @@ class PlayerStats {
     switch (this.level) {
       case 1:
         player.bulletBlaster = new PlayerBulletBlasters();
-        weapons.push(player.bulletBlaster);
         break;
       case 3:
         player.bulletBlaster.weaponCount += 2;
@@ -125,24 +130,16 @@ class PlayerStats {
         break;
       case 7:
         player.seekerThrower = new PlayerSeekerThrowers();
-        weapons.push(player.seekerThrower);
         break;
       case 9:
         player.seekerThrower.weaponCount += 2;
         break;
       case 11:
         player.laserGun = new PlayerLaserGuns();
-        weapons.push(player.laserGun);
         break;
+      case 13:
+        player.engines = new PlayerEngines();
     }
-    this.updateStats();
-  }
-
-  updateStats() {
-    player.bulletBlaster.damage = player.bulletBlaster.baseDamage * this.damageMultiplier;
-    player.bulletBlaster.fireDelay = player.bulletBlaster.baseFireDelay / this.fireDelayMultiplier;
-    // thrower.damage = thrower.baseDamage * this.damageMultiplier;
-    // thrower.fireDelay = thrower.baseFireDelay / this.fireDelayMultiplier;
-    UI.test();
+    ui.updateStats();
   }
 }

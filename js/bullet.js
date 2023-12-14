@@ -10,21 +10,6 @@ class Projectile {
   }
 
   update() {
-    if (this.type === "player") {
-      for (const ship of enemyShips) {
-        if (checkCollisionCircleRect(this, ship.hitbox)) {
-          ship.getHit(this.damage);
-          this.destroy();
-          return;
-        }
-      }
-    } else if (this.type === "enemy") {
-      if (checkCollisionCircleRect(this, player.hitbox)) {
-        playerStats.getHit(this.damage);
-        this.destroy();
-        return;
-      }
-    }
     if (this.isOutOfBounds()) {
       this.destroy();
       return;
@@ -58,7 +43,9 @@ class Projectile {
   }
 
   destroy() {
-    bullets.splice(bullets.indexOf(this), 1);
+    if (bullets.indexOf(this) != -1) {
+      bullets.splice(bullets.indexOf(this), 1);
+    }
   }
 }
 
@@ -69,77 +56,50 @@ class Bullet extends Projectile {
   }
 }
 
-class SeekerBullet extends Projectile {
+class PlayerSeekerBullet extends Projectile {
   constructor(position, weapon) {
     super(position, weapon);
     this.targetVector = createVector();
     this.speed = 2;
-    if (this.type === "player") {
-      if (enemyShips.length === 0) {
-        this.targetVector = createVector(random(width), -150);
-        this.target = 1;
-      } else {
-        this.target = enemyShips[round(random(enemyShips.length - 1))];
-      }
-    } else if (this.type === "enemy") {
-      this.target = player;
+    if (enemyShips.length === 0) {
+      this.targetVector = createVector(random(width), -150);
+      this.target = 1;
+    } else {
+      this.target = enemyShips[round(random(enemyShips.length - 1))];
     }
   }
 
   update() {
-    if (this.type === "player") {
-      this.speed = lerp(this.speed, 50, 0.001);
-      //if target ship is dead
-      if (enemyShips.indexOf(this.target) === -1 && this.target != 1) {
-        //if there is no enemy ship
-        if (enemyShips.length === 0) {
-          if (this.position.y > -100) {
-            this.targetVector = createVector(random(width), -150);
-            this.target = 1;
-          }
-        } else {
-          this.target = enemyShips[round(random(enemyShips.length - 1))];
+    this.speed = lerp(this.speed, 50, 0.001);
+    //if target ship no longer exists
+    if (enemyShips.indexOf(this.target) === -1 && this.target != 1) {
+      //if there is no enemy ship
+      if (enemyShips.length === 0) {
+        //send the bullet at a random vector above the canvas
+        if (this.position.y > -100) {
+          this.targetVector = createVector(random(width), -150);
+          this.target = 1;
         }
-      }
-    } else if (this.type === "enemy") {
-      let i = bullets.length;
-      while (i--) {
-        if (bullets[i].type === "player") {
-          if (checkCollisionCircleCircle(bullets[i], this)) {
-            bullets[i].destroy();
-            this.destroy();
-            return;
-          }
-        }
+      } else {
+        //find a new target
+        this.target = enemyShips[round(random(enemyShips.length - 1))];
       }
     }
+    //if the missile has a target, set the bullet direction
     if (this.target != 1) {
-      this.setTargetVector();
+      this.targetVector = this.target.hitbox.position.copy();
     }
     this.direction = this.targetVector.copy().sub(this.position);
     super.update();
   }
 
-  setTargetVector() {
-    this.targetVector = this.target.hitbox.position.copy();
-  }
-
   show() {
     push();
-    if (this.type === "player") {
-      noStroke();
-      fill(50, 50, 255);
-      circle(this.position.x, this.position.y, this.size);
-      fill(50, 255, 255);
-      circle(this.position.x, this.position.y, this.size * 0.5);
-    } else if (this.type === "enemy") {
-      stroke(255, 150, 150);
-      fill(255, 50, 50);
-      circle(this.position.x, this.position.y, this.size);
-      noStroke();
-      fill(255, 255, 50);
-      circle(this.position.x, this.position.y, this.size * 0.5);
-    }
+    noStroke();
+    fill(50, 50, 255);
+    circle(this.position.x, this.position.y, this.size);
+    fill(50, 255, 255);
+    circle(this.position.x, this.position.y, this.size * 0.5);
     pop();
   }
 }
@@ -149,25 +109,28 @@ class Laser {
   #expandDuration;
   #expandTimer = 0;
   #windUpEffectSize;
-  #lastHitTime = 0;
 
   constructor(positionOffset, weapon) {
     this.positionOffset = positionOffset.copy();
     this.direction = weapon.direction;
     this.type = weapon.type;
     this.width = weapon.projectileSize;
-    this.duration = weapon.laserDuration;
+    this.duration = 5;
     this.#expandDuration = this.duration * 0.2;
     this.creationTime = millis();
     this.damagePerSecond = weapon.damage;
     this.tickRate = weapon.tickRate;
     this.weapon = weapon;
+    this.position = weapon.weaponOwner.position.copy().add(positionOffset);
     lasers.push(this);
   }
 
   update() {
-    //destroy when duration runs out
-    if (millis() - this.creationTime >= this.duration * 1000) {
+    //destroy when duration runs out or if owner is dead
+    if (
+      millis() - this.creationTime >= this.duration * 1000 ||
+      (this.type === "enemy" && enemyShips.indexOf(this.weapon.weaponOwner) === -1)
+    ) {
       this.destroy();
       return;
     }
@@ -175,19 +138,10 @@ class Laser {
     this.position = this.weapon.weaponOwner.position.copy().add(this.positionOffset);
     //expanding animation
     if (this.#expandTimer < this.#expandDuration * 1000) {
-      this.height -= height / ((this.#expandDuration * 1000) / deltaTime);
-      this.positionOffset.y -= height / ((this.#expandDuration * 1000) / deltaTime) / 2;
+      this.height += (this.direction.y * height) / ((this.#expandDuration * 1000) / deltaTime);
+      this.positionOffset.y +=
+        (this.direction.y * height) / ((this.#expandDuration * 1000) / deltaTime) / 2;
       this.#expandTimer += deltaTime;
-    }
-    if (millis() - this.#lastHitTime >= this.tickRate * 1000) {
-      if (this.type === "player") {
-        for (const ship of enemyShips) {
-          if (checkCollisionRectRect(this, ship.hitbox)) {
-            ship.getHit(this.damagePerSecond * this.tickRate);
-            this.#lastHitTime = millis();
-          }
-        }
-      }
     }
     this.show();
   }
@@ -195,8 +149,12 @@ class Laser {
   show() {
     push();
     noStroke();
-    fill(50, 50, 255);
+    if (this.type === "player") fill(50, 50, 255);
+    else if (this.type === "enemy") fill(255, 50, 50);
     rect(this.position.x, this.position.y, this.width, this.height);
+    if (this.type === "player") fill(200, 200, 255);
+    else if (this.type === "enemy") fill(255, 200, 200);
+    rect(this.position.x, this.position.y, this.width / 3, this.height);
     //create a shriking circle animation while the laser is expanding
     if (this.#expandTimer < this.#expandDuration * 1000) {
       circle(this.position.x, this.position.y - this.height / 2, this.#windUpEffectSize);
@@ -212,6 +170,46 @@ class Laser {
   }
 
   destroy() {
-    lasers.splice(lasers.indexOf(this), 1);
+    if (lasers.indexOf(this) != -1) {
+      lasers.splice(lasers.indexOf(this), 1);
+    }
+  }
+}
+
+class EnginesFire {
+  constructor(positionOffset, weapon) {
+    this.positionOffset = positionOffset.copy();
+    this.direction = weapon.direction;
+    this.type = weapon.type;
+    this.width = playerEnginesSprite.width;
+    this.height = playerEnginesSprite.height;
+    this.duration = weapon.enginesDuration;
+    this.creationTime = millis();
+    this.damagePerSecond = weapon.damage;
+    this.tickRate = weapon.tickRate;
+    this.weapon = weapon;
+    this.position = weapon.weaponOwner.position.copy().add(positionOffset);
+    lasers.push(this);
+  }
+
+  update() {
+    //destroy when duration runs out
+    if (millis() - this.creationTime >= this.duration * 1000) {
+      this.destroy();
+      return;
+    }
+    //set its position to follow the ship that shoots it
+    this.position = this.weapon.weaponOwner.position.copy().add(this.positionOffset);
+    this.show();
+  }
+
+  show() {
+    image(playerEnginesSprite, this.position.x, this.position.y);
+  }
+
+  destroy() {
+    if (lasers.indexOf(this) != -1) {
+      lasers.splice(lasers.indexOf(this), 1);
+    }
   }
 }

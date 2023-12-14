@@ -3,93 +3,142 @@ let lasers = new Array();
 let enemyShips = new Array();
 let waves = new Array();
 let experiences = new Array();
-let weapons = new Array();
 let pickUps = new Array();
 let stars = new Array();
+let spriteAnimations = new Array();
 bossKilled = false;
 
 let player;
 let playerStats;
-let isGameOver = true;
+let isGameRunning = false;
+let isGameOver = false;
+let gameTimer;
 let timeGameStart;
 let wavesManager;
+let ui;
 
+let asteroid1Sprites = new Array();
+let asteroid2Sprites = new Array();
+let asteroidsSprites = new Array();
+let bubbleExplosionSprites = new Array();
+let bubbleExplosionSpritesSmall = new Array();
 let shipsSpriteDown;
 let shipsSpriteUp;
 let playerSprite;
+let playerEnginesSprite;
 let pathfinderSprite;
 let ravenSprite;
 let hawkSprite;
+let bomberSprite;
+let zapperSprite;
 let bossSprite;
-let playButton;
 let pixelFont;
 
-let showHitbox = true;
+let devMode = true;
 
 function preload() {
   shipsSpriteDown = loadImage("./assets/ships_looking_down.png");
   shipsSpriteUp = loadImage("./assets/ships_looking_up.png");
+  for (let i = 1; i <= 10; i++) {
+    bubbleExplosionSprites.push(loadImage("./assets/bubble_explosion/bubble_explo" + i + ".png"));
+    bubbleExplosionSpritesSmall.push(
+      loadImage("./assets/bubble_explosion/bubble_explo" + i + ".png")
+    );
+  }
+  for (let i = 1; i <= 32; i++) {
+    asteroid1Sprites.push(loadImage("./assets/asteroid1/aster" + i + ".png"));
+    asteroid2Sprites.push(loadImage("./assets/asteroid2/aster" + i + ".png"));
+  }
   pixelFont = loadFont("./assets/retro_gaming.ttf");
 }
 
 function setup() {
   frameRate(60);
-  playerSprite = shipsSpriteUp.get(63, 71, 129, 101);
-  hawkSprite = shipsSpriteDown.get(335, 1611, 97, 137);
-  ravenSprite = shipsSpriteDown.get(335, 1859, 97, 137);
-  pathfinderSprite = shipsSpriteDown.get(335, 855, 97, 85);
-  bossSprite = shipsSpriteDown.get(283, 2359, 201, 165);
+
+  //Sprites
+  for (const bubbleExplosionSprite of bubbleExplosionSprites) {
+    bubbleExplosionSprite.resize(0, 60);
+  }
+  for (const bubbleExplosionSprite of bubbleExplosionSpritesSmall) {
+    bubbleExplosionSprite.resize(0, 10);
+  }
+  for (let index = 0; index < asteroid1Sprites.length; index++) {
+    asteroid1Sprites[index].resize(0, 40);
+    asteroid2Sprites[index].resize(0, 40);
+  }
+  asteroidsSprites.push(asteroid1Sprites);
+  asteroidsSprites.push(asteroid2Sprites);
+  playerSprite = shipsSpriteUp.get(64, 72, 128, 100);
+  playerSprite.resize(0, 35);
+  playerEnginesSprite = shipsSpriteUp.get(328, 168, 112, 52);
+  playerEnginesSprite.resize(0, 18.2);
+  hawkSprite = shipsSpriteDown.get(336, 1612, 96, 136);
+  hawkSprite.resize(0, 40);
+  ravenSprite = shipsSpriteDown.get(336, 1860, 96, 136);
+  ravenSprite.resize(0, 40);
+  pathfinderSprite = shipsSpriteDown.get(336, 856, 96, 84);
+  pathfinderSprite.resize(0, 30);
+  bomberSprite = shipsSpriteDown.get(288, 1336, 192, 128);
+  bomberSprite.resize(0, 40);
+  zapperSprite = shipsSpriteDown.get(320, 2876, 128, 132);
+  zapperSprite.resize(0, 40);
+  bossSprite = shipsSpriteDown.get(284, 2360, 200, 164);
+  bossSprite.resize(0, 300);
+
+  //Canvas
   createCanvas(400, 600);
+
+  //Modes
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
   imageMode(CENTER);
-  UI.showPlayButton();
-  player = new PlayerShip(playerSprite);
+
+  //Game Setup
+  ui = new UI();
+  ui.showPlayButton();
   for (let index = 0; index < 50; index++) {
     stars.push(new Star());
   }
 }
 
 function gameOver() {
+  isGameRunning = false;
   isGameOver = true;
-  UI.showPlayButton();
+  ui.showPlayButton();
 }
 
 function newGame() {
-  playButton.hide();
-  isGameOver = false;
-  bossKilled = false;
-  timeGameStart = millis();
+  ui.hidePlayButton();
   bullets = new Array();
   lasers = new Array();
   enemyShips = new Array();
   waves = new Array();
   experiences = new Array();
-  weapons = new Array();
   pickUps = new Array();
-  UI.initialize();
-  player = new PlayerShip(playerSprite);
+  spriteAnimations = new Array();
   playerStats = new PlayerStats();
+  player = new PlayerShip(playerSprite);
   playerStats.levelUp();
   wavesManager = new WaveManager();
+  bossKilled = false;
+  timeGameStart = millis();
+  gameTimer = 0;
+  isGameRunning = true;
+  isGameOver = false;
 }
 
-let i;
-
+let currentIndex = 0;
 function draw() {
   background(0);
   for (const star of stars) {
     star.update();
   }
-  if (!isGameOver) {
+  if (isGameRunning) {
     wavesManager.update();
     player.update();
-    i = enemyShips.length;
-    while (i--) {
-      enemyShips[i].update();
-    }
-    for (const weapon of weapons) {
-      weapon.update();
+    let enemyShipsIndex = enemyShips.length;
+    while (enemyShipsIndex--) {
+      enemyShips[enemyShipsIndex].update();
     }
     for (const pickUp of pickUps) {
       pickUp.update();
@@ -97,95 +146,17 @@ function draw() {
     for (const laser of lasers) {
       laser.update();
     }
-    i = bullets.length;
-    while (i--) {
-      bullets[i].update();
+    let bulletsIndex = bullets.length;
+    while (bulletsIndex--) {
+      bullets[bulletsIndex].update();
     }
     for (const experience of experiences) {
       experience.update();
     }
-    UI.update();
-  } else player.show();
-}
-
-function checkCollisionCircleRect(circle, rect) {
-  // Calculate half-width and half-height for the rectangle
-  let w = rect.width / 2;
-  let h = rect.height / 2;
-
-  // Find the closest point on the rectangle to the circle
-  let closestX = constrain(circle.position.x, rect.position.x - w, rect.position.x + w);
-  let closestY = constrain(circle.position.y, rect.position.y - h, rect.position.y + h);
-
-  // Calculate the distance between the circle and the closest point on the rectangle
-  let distance = dist(circle.position.x, circle.position.y, closestX, closestY);
-
-  // Check for collision
-  if (distance <= circle.size / 2) {
-    return true; // Collision detected
-  }
-  return false; // No collision
-}
-
-function checkCollisionRectRect(rect1, rect2) {
-  // Calculate half-width and half-height for each rectangle
-  let w1 = abs(rect1.width / 2);
-  let h1 = abs(rect1.height / 2);
-  let w2 = abs(rect2.width / 2);
-  let h2 = abs(rect2.height / 2);
-
-  // Calculate the distance between the centers of the rectangles
-  let dx = abs(rect1.position.x - rect2.position.x);
-  let dy = abs(rect1.position.y - rect2.position.y);
-
-  // Check for overlap
-  if (dx <= w1 + w2 && dy <= h1 + h2) {
-    return true; // Collision detected
-  }
-
-  return false; // No collision
-}
-
-function checkCollisionCircleCircle(circle1, circle2) {
-  // Calculate the distance between the centers of the circles
-  let distance = dist(
-    circle1.position.x,
-    circle1.position.y,
-    circle2.position.x,
-    circle2.position.y
-  );
-
-  // Check if the distance is less than the sum of their radii
-  if (distance < circle1.size / 2 + circle2.size / 2) {
-    return true; // Colliding
-  } else {
-    return false; // Not colliding
-  }
-}
-
-class Star {
-  constructor() {
-    this.initialize();
-    this.position = createVector(random(width), random(-height, height));
-  }
-
-  initialize() {
-    this.position = createVector(random(width), random(0, -height));
-    this.size = round(random(2, 5));
-    this.alpha = random(100, 200);
-    this.speed = map(this.size, 2, 5, 1, 3);
-  }
-  update() {
-    this.position.y += this.speed;
-    if (this.position.y > 600 + this.size) {
-      this.initialize();
+    for (const animation of spriteAnimations) {
+      animation.update();
     }
-    this.show();
+    gameTimer = millis() - timeGameStart;
   }
-  show() {
-    push();
-    fill(255, this.alpha);
-    circle(this.position.x, this.position.y, this.size);
-    pop();
-  }
+  ui.update();
 }

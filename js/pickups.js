@@ -47,7 +47,9 @@ class PickUp {
   }
 
   destroy() {
-    pickUps.splice(pickUps.indexOf(this), 1);
+    if (pickUps.indexOf(this) != -1) {
+      pickUps.splice(pickUps.indexOf(this), 1);
+    }
   }
 }
 
@@ -62,7 +64,7 @@ class HealthPickUp extends PickUp {
   }
 
   onPickUp() {
-    playerStats.gainHealth();
+    player.damageable.gainHealth(1);
   }
 }
 
@@ -81,7 +83,7 @@ class BombPickUp extends PickUp {
     let i;
     i = enemyShips.length;
     while (i--) {
-      enemyShips[i].getHit(100);
+      enemyShips[i].damageable.takeDamage(100);
     }
   }
 }
