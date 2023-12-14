@@ -34,7 +34,7 @@ let zapperSprite;
 let bossSprite;
 let pixelFont;
 
-let devMode = true;
+let devMode = false;
 
 function preload() {
   shipsSpriteDown = loadImage("./assets/ships_looking_down.png");

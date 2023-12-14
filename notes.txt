@@ -9,7 +9,7 @@ shield ?
 dodge ?
 slow time ?
 
-git archive --format=zip --output Builds/Shooter_v0.05.zip master
+git archive --format=zip --output Builds/Shooter_v0.06.zip master
 
 
 Credits :
