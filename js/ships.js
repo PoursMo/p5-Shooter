@@ -58,7 +58,7 @@ class EnemyShip extends Ship {
   onTakeDamage() {
     spriteAnimations.push(
       new SpriteAnimation(
-        bubbleExplosionSpritesSmall,
+        bubbleExplosionAnimationSpritesSmall,
         this.position
           .copy()
           .add(
@@ -141,7 +141,7 @@ class Asteroid extends EnemyShip {
   damageable = new Damageable("player", "circle", this.maxHealth, this);
 
   constructor(position, direction) {
-    let randomSprites = random(asteroidsSprites);
+    let randomSprites = random([asteroid1Sprites, asteroid2Sprites]);
     super(randomSprites[0], position, direction);
     this.size = randomSprites[0].width;
     this.hitbox = new Hitbox("circle", this, createVector(), 0);

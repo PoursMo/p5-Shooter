@@ -234,19 +234,24 @@ class Damageable {
   }
 }
 
-function sliceSpriteSheet(sheet, columns, rows){
-  let sprites = new Array()
-  let columnIndex = 0
-  let rowIndex=0
-  for(const index=0;index<rows*columns;index++){
-    sprites.push(sheet.get(sheet.width/columns*columnIndex,
-    sheet.height/rows*rowIndex,
-    sheet.width/columns,sheet.height/rows))
-  if(rowIndex===rowIndex) {
-    rowIndex=0
-    columnIndex++
-    }
-  else rowIndex++
+function sliceSpriteSheet(sheet, columns, rows) {
+  let sprites = new Array();
+  let columnIndex = 0;
+  let rowIndex = 0;
+  for (let index = 0; index < rows * columns; index++) {
+    sprites.push(
+      sheet.get(
+        (sheet.width / columns) * columnIndex,
+        (sheet.height / rows) * rowIndex,
+        sheet.width / columns,
+        sheet.height / rows
+      )
+    );
+    if (rowIndex === rows - 1) {
+      rowIndex = 0;
+      columnIndex++;
+    } else rowIndex++;
   }
-  return sprites
+  print(sprites);
+  return sprites;
 }

@@ -63,6 +63,7 @@ class BombPickUp extends PickUp {
   }
 
   onPickUp() {
+    background(200);
     bullets.length = 0;
     let i;
     i = enemyShips.length;

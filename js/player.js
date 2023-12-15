@@ -54,7 +54,7 @@ class PlayerShip extends Ship {
   }
 
   onTakeDamage() {
-    spriteAnimations.push(new SpriteAnimation(bubbleExplosionSprites, this.position));
+    spriteAnimations.push(new SpriteAnimation(bubbleExplosionAnimationSprites, this.position));
     this.#lastHitTime = millis();
     this.damageable.invulnerable = true;
   }
@@ -128,6 +128,7 @@ class PlayerStats {
   }
 
   levelUp() {
+    spriteAnimations.push(new SpriteAnimation(levelUpAnimationSprites, player.position));
     this.level++;
     if (this.level === 1) {
       player.engines = new PlayerEngines();

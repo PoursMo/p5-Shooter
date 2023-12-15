@@ -17,11 +17,18 @@ let timeGameStart;
 let wavesManager;
 let ui;
 
+//Sprite Sheets
 let shipsSpriteDown;
 let shipsSpriteUp;
-let asteroid1Sprites = new Array();
-let asteroid2Sprites = new Array();
-let asteroidsSprites = new Array();
+let asteroid1AnimationSheet;
+let asteroid2AnimationSheet;
+let levelUpAnimationSheet;
+let bubbleExplosionAnimationSheet;
+
+//Sprites & animations
+let levelUpAnimationSprites;
+let asteroid1Sprites;
+let asteroid2Sprites;
 let playerSprite;
 let playerEnginesSprite;
 let pathfinderSprite;
@@ -30,28 +37,22 @@ let hawkSprite;
 let bomberSprite;
 let zapperSprite;
 let bossSprite;
-let bubbleExplosionSprites = new Array();
-let bubbleExplosionSpritesSmall = new Array();
+let bubbleExplosionAnimationSprites;
+let bubbleExplosionAnimationSpritesSmall;
 let bombPickUpSprite;
 let healthPickUpSprite;
 let warningSprite;
 let pixelFont;
 
-let devMode = false;
+let devMode = true;
 
 function preload() {
   shipsSpriteDown = loadImage("./assets/ships_looking_down.png");
   shipsSpriteUp = loadImage("./assets/ships_looking_up.png");
-  for (let i = 1; i <= 10; i++) {
-    bubbleExplosionSprites.push(loadImage("./assets/bubble_explosion/bubble_explo" + i + ".png"));
-    bubbleExplosionSpritesSmall.push(
-      loadImage("./assets/bubble_explosion/bubble_explo" + i + ".png")
-    );
-  }
-  for (let i = 1; i <= 32; i++) {
-    asteroid1Sprites.push(loadImage("./assets/asteroid1/aster" + i + ".png"));
-    asteroid2Sprites.push(loadImage("./assets/asteroid2/aster" + i + ".png"));
-  }
+  bubbleExplosionAnimationSheet = loadImage("./assets/bubble_explosion_animation.png");
+  asteroid1AnimationSheet = loadImage("./assets/animated_asteroid.png");
+  asteroid2AnimationSheet = loadImage("./assets/animated_asteroid2.png");
+  levelUpAnimationSheet = loadImage("./assets/level_up_animation.png");
   bombPickUpSprite = loadImage("./assets/pickup_bomb.png");
   healthPickUpSprite = loadImage("./assets/pickup_health.png");
   warningSprite = loadImage("./assets/warning.png");
@@ -62,18 +63,23 @@ function setup() {
   frameRate(60);
 
   //Sprites
-  for (const bubbleExplosionSprite of bubbleExplosionSprites) {
-    bubbleExplosionSprite.resize(0, 60);
+  bubbleExplosionAnimationSprites = sliceSpriteSheet(bubbleExplosionAnimationSheet, 10, 1);
+  for (const sprite of bubbleExplosionAnimationSprites) {
+    sprite.resize(0, 60);
   }
-  for (const bubbleExplosionSprite of bubbleExplosionSpritesSmall) {
-    bubbleExplosionSprite.resize(0, 10);
+  bubbleExplosionAnimationSpritesSmall = sliceSpriteSheet(bubbleExplosionAnimationSheet, 10, 1);
+  for (const sprite of bubbleExplosionAnimationSpritesSmall) {
+    sprite.resize(0, 10);
   }
-  for (let index = 0; index < asteroid1Sprites.length; index++) {
-    asteroid1Sprites[index].resize(0, 40);
-    asteroid2Sprites[index].resize(0, 40);
+  asteroid1Sprites = sliceSpriteSheet(asteroid1AnimationSheet, 16, 2);
+  for (const sprite of asteroid1Sprites) {
+    sprite.resize(0, 40);
   }
-  asteroidsSprites.push(asteroid1Sprites);
-  asteroidsSprites.push(asteroid2Sprites);
+  asteroid2Sprites = sliceSpriteSheet(asteroid2AnimationSheet, 16, 2);
+  for (const sprite of asteroid2Sprites) {
+    sprite.resize(0, 40);
+  }
+  levelUpAnimationSprites = sliceSpriteSheet(levelUpAnimationSheet, 8, 1);
   playerSprite = shipsSpriteUp.get(64, 72, 128, 100);
   playerSprite.resize(0, 35);
   playerEnginesSprite = shipsSpriteUp.get(328, 168, 112, 52);
