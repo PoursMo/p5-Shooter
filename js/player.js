@@ -129,29 +129,17 @@ class PlayerStats {
 
   levelUp() {
     this.level++;
-    this.damageMultiplier += 0.01;
-    this.fireDelayMultiplier += 0.01;
-    switch (this.level) {
-      case 1:
-        player.engines = new PlayerEngines();
-        player.bulletBlaster = new PlayerBulletBlasters();
-        break;
-      case 3:
-        player.bulletBlaster.weaponCount += 2;
-        break;
-      case 5:
-        player.bulletBlaster.weaponCount += 2;
-        break;
-      case 7:
-        player.seekerThrower = new PlayerSeekerThrowers();
-        break;
-      case 9:
-        player.seekerThrower.weaponCount += 2;
-        break;
-      case 11:
-        player.laserGun = new PlayerLaserGuns();
-        break;
+    if (this.level === 1) {
+      player.engines = new PlayerEngines();
+      player.bulletBlaster = new PlayerBulletBlasters();
+    } else if (this.level === 5) player.seekerThrower = new PlayerSeekerThrowers();
+    else if (this.level === 10) player.laserGun = new PlayerLaserGuns();
+    else if (player.bulletBlaster.levelUp()) return;
+    else if (player.seekerThrower.levelUp()) return;
+    else if (player.laserGun.levelUp()) return;
+    else {
+      this.damageMultiplier += 0.01;
+      this.fireDelayMultiplier += 0.01;
     }
-    ui.updateStats();
   }
 }

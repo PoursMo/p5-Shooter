@@ -197,10 +197,5 @@ class PlayerEngines {
 
   show() {
     image(playerEnginesSprite, this.position.x, this.position.y);
-    push();
-    noFill();
-    stroke(0, 255, 0);
-    rect(this.position.x, this.position.y, this.width, this.height);
-    pop();
   }
 }

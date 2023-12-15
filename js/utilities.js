@@ -124,20 +124,17 @@ class Hitbox {
     if (shape === "rectangle") {
       this.widthOffset = sizeOffset[0];
       this.heightOffset = sizeOffset[1];
+      this.width = this.parent.sprite.width + this.widthOffset;
+      this.height = this.parent.sprite.height + this.heightOffset;
     } else if (shape === "circle") {
       this.sizeOffset = sizeOffset[0];
+      this.size = this.parent.size + this.sizeOffset;
     }
     this.position = parent.position.copy().add(positionOffset);
   }
 
   update() {
     this.position = this.parent.position.copy().add(this.positionOffset);
-    if (this.shape === "rectangle") {
-      this.width = this.parent.sprite.width + this.widthOffset;
-      this.height = this.parent.sprite.height + this.heightOffset;
-    } else if (this.shape === "circle") {
-      this.size = this.parent.size + this.sizeOffset;
-    }
     if (devMode) {
       this.show();
     }

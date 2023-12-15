@@ -1,8 +1,14 @@
 - sounds
 - UI
 - better waves
+warnings ?
 - better boss
+- support spritesheets
 - better levelup
+- collision detection in hitbox class ?    
+- laser teleports at end of extension
+
+
 
 - characters with different starting weapons + abilities ?
 - abilities :
@@ -10,7 +16,7 @@ shield ?
 dodge ?
 slow time ?
 
-git archive --format=zip --output Builds/Shooter_v0.06.1.zip master
+git archive --format=zip --output Builds/Shooter_v0.07.zip master
 
 
 Credits :

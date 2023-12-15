@@ -17,13 +17,11 @@ let timeGameStart;
 let wavesManager;
 let ui;
 
+let shipsSpriteDown;
+let shipsSpriteUp;
 let asteroid1Sprites = new Array();
 let asteroid2Sprites = new Array();
 let asteroidsSprites = new Array();
-let bubbleExplosionSprites = new Array();
-let bubbleExplosionSpritesSmall = new Array();
-let shipsSpriteDown;
-let shipsSpriteUp;
 let playerSprite;
 let playerEnginesSprite;
 let pathfinderSprite;
@@ -32,6 +30,11 @@ let hawkSprite;
 let bomberSprite;
 let zapperSprite;
 let bossSprite;
+let bubbleExplosionSprites = new Array();
+let bubbleExplosionSpritesSmall = new Array();
+let bombPickUpSprite;
+let healthPickUpSprite;
+let warningSprite;
 let pixelFont;
 
 let devMode = false;
@@ -49,6 +52,9 @@ function preload() {
     asteroid1Sprites.push(loadImage("./assets/asteroid1/aster" + i + ".png"));
     asteroid2Sprites.push(loadImage("./assets/asteroid2/aster" + i + ".png"));
   }
+  bombPickUpSprite = loadImage("./assets/pickup_bomb.png");
+  healthPickUpSprite = loadImage("./assets/pickup_health.png");
+  warningSprite = loadImage("./assets/warning.png");
   pixelFont = loadFont("./assets/retro_gaming.ttf");
 }
 
@@ -143,8 +149,9 @@ function draw() {
     for (const pickUp of pickUps) {
       pickUp.update();
     }
-    for (const laser of lasers) {
-      laser.update();
+    let lasersIndex = lasers.length;
+    while (lasersIndex--) {
+      lasers[lasersIndex].update();
     }
     let bulletsIndex = bullets.length;
     while (bulletsIndex--) {

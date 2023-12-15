@@ -8,13 +8,13 @@ class UI {
 
   updateStats() {
     //BITE
-    this.multipliersUI.html(
-      "Fire rate: " +
-        round(playerStats.fireDelayMultiplier * 100) +
-        "%<br>Damage: " +
-        round(playerStats.damageMultiplier * 100) +
-        "%"
-    );
+    // this.multipliersUI.html(
+    //   "Fire rate: " +
+    //     round(playerStats.fireDelayMultiplier * 100) +
+    //     "%<br>Damage: " +
+    //     round(playerStats.damageMultiplier * 100) +
+    //     "%"
+    // );
   }
 
   update() {

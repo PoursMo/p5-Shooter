@@ -40,12 +40,6 @@ class PickUp {
     }
   }
 
-  show() {
-    fill(255, 255, 50);
-    noStroke();
-    circle(this.position.x, this.position.y, this.size);
-  }
-
   destroy() {
     if (pickUps.indexOf(this) != -1) {
       pickUps.splice(pickUps.indexOf(this), 1);
@@ -55,12 +49,7 @@ class PickUp {
 
 class HealthPickUp extends PickUp {
   show() {
-    push();
-    super.show();
-    textSize(this.size);
-    fill(255, 50, 50);
-    text("♥", this.position.x, this.position.y);
-    pop();
+    image(healthPickUpSprite, this.position.x, this.position.y);
   }
 
   onPickUp() {
@@ -70,12 +59,7 @@ class HealthPickUp extends PickUp {
 
 class BombPickUp extends PickUp {
   show() {
-    push();
-    super.show();
-    textSize(this.size);
-    fill(255, 50, 50);
-    text("B", this.position.x, this.position.y);
-    pop();
+    image(bombPickUpSprite, this.position.x, this.position.y);
   }
 
   onPickUp() {
