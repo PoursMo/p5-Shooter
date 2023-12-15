@@ -43,7 +43,10 @@ class EnemyShip extends Ship {
       return;
     }
     this.damageable.update();
-    if (checkCollisionRectRect(this.hitbox, player.hitbox)) {
+    if (
+      (this.hitbox.shape === "rectangle" && checkCollisionRectRect(this.hitbox, player.hitbox)) ||
+      (this.hitbox.shape === "circle" && checkCollisionCircleRect(this.hitbox, player.hitbox))
+    ) {
       this.damageable.takeDamage(100);
       player.damageable.takeDamage(1);
     }

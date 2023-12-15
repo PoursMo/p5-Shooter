@@ -3,12 +3,12 @@ class PlayerShip extends Ship {
   bulletBlaster;
   seekerThrower;
   laserGun;
-  engines;
   baseSpeed = 5;
   speed = this.baseSpeed;
   #lastHitTime = 0;
   invulTime = 0.3;
   damageable = new Damageable("enemy", "rectangle", playerStats.maxHealth, this);
+  isMoving;
 
   constructor(sprite) {
     super(sprite, 0, 0);
@@ -37,9 +37,10 @@ class PlayerShip extends Ship {
     if (this.laserGun) {
       this.laserGun.update();
     }
-    if (this.engines) {
+    if (this.isMoving) {
       this.engines.update();
-    }
+      this.engines.isActive = true;
+    } else this.engines.isActive = false;
   }
 
   #boundsCollision() {
@@ -76,6 +77,7 @@ class PlayerShip extends Ship {
     //Up
     if (keyIsDown(87) || keyIsDown(38)) {
       this.direction.y = -1;
+      // this.engines.update();
     }
     //Down
     else if (keyIsDown(83) || keyIsDown(40)) {
@@ -83,6 +85,17 @@ class PlayerShip extends Ship {
     } else {
       this.direction.y = 0;
     }
+    //Left Right Up
+    if (
+      keyIsDown(65) ||
+      keyIsDown(37) ||
+      keyIsDown(68) ||
+      keyIsDown(39) ||
+      keyIsDown(87) ||
+      keyIsDown(38)
+    ) {
+      this.isMoving = true;
+    } else this.isMoving = false;
     //Space
     if (keyIsDown(32)) {
     }
@@ -120,6 +133,7 @@ class PlayerStats {
     this.fireDelayMultiplier += 0.01;
     switch (this.level) {
       case 1:
+        player.engines = new PlayerEngines();
         player.bulletBlaster = new PlayerBulletBlasters();
         break;
       case 3:
@@ -137,8 +151,6 @@ class PlayerStats {
       case 11:
         player.laserGun = new PlayerLaserGuns();
         break;
-      case 13:
-        player.engines = new PlayerEngines();
     }
     ui.updateStats();
   }

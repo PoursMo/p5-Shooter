@@ -157,7 +157,8 @@ class Hitbox {
 }
 
 class Damageable {
-  #lastHitTime = 0;
+  #laserLastHitTime = 0;
+  #playerEnginesLastHitTime = 0;
   invulnerable = false;
 
   constructor(damagerType, parentShape, maxHealth, parent) {
@@ -177,6 +178,7 @@ class Damageable {
   update() {
     this.checkBullets();
     this.checkLasers();
+    this.checkPlayerEngines();
   }
 
   checkBullets() {
@@ -192,15 +194,27 @@ class Damageable {
     }
   }
 
+  checkPlayerEngines() {
+    if (
+      this.damagerType === "player" &&
+      player.engines.isActive &&
+      millis() - this.#playerEnginesLastHitTime >= player.engines.tickRate * 1000 &&
+      this.laserFunction(this.parent.hitbox, player.engines)
+    ) {
+      this.takeDamage(player.engines.damagePerSecond * player.engines.tickRate);
+      this.#playerEnginesLastHitTime = millis();
+    }
+  }
+
   checkLasers() {
     for (const laser of lasers) {
       if (
         laser.type === this.damagerType &&
-        millis() - this.#lastHitTime >= laser.tickRate * 1000 &&
+        millis() - this.#laserLastHitTime >= laser.tickRate * 1000 &&
         this.laserFunction(this.parent.hitbox, laser)
       ) {
         this.takeDamage(laser.damagePerSecond * laser.tickRate);
-        this.#lastHitTime = millis();
+        this.#laserLastHitTime = millis();
       }
     }
   }

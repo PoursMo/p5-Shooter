@@ -208,30 +208,3 @@ class PlayerLaserGuns extends Weapon {
     }
   }
 }
-
-class PlayerEngines extends Weapon {
-  enginesDuration = 2;
-  tickRate = 0.7;
-  weaponCount = 1;
-
-  constructor() {
-    super(
-      createVector(0, player.sprite.height / 2 + playerEnginesSprite.height / 2 - 3),
-      4,
-      5,
-      undefined,
-      player
-    );
-    this.fireDelay = this.baseFireDelay + this.enginesDuration;
-  }
-
-  update() {
-    this.fireDelay = this.baseFireDelay / playerStats.fireDelayMultiplier + this.laserDuration;
-    this.damage = this.baseDamage * playerStats.damageMultiplier;
-    super.update();
-  }
-
-  fire() {
-    new EnginesFire(this.positionOffset, this);
-  }
-}

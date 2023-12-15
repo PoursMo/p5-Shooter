@@ -176,40 +176,31 @@ class Laser {
   }
 }
 
-class EnginesFire {
-  constructor(positionOffset, weapon) {
-    this.positionOffset = positionOffset.copy();
-    this.direction = weapon.direction;
-    this.type = weapon.type;
-    this.width = playerEnginesSprite.width;
-    this.height = playerEnginesSprite.height;
-    this.duration = weapon.enginesDuration;
-    this.creationTime = millis();
-    this.damagePerSecond = weapon.damage;
-    this.tickRate = weapon.tickRate;
-    this.weapon = weapon;
-    this.position = weapon.weaponOwner.position.copy().add(positionOffset);
-    lasers.push(this);
-  }
+class PlayerEngines {
+  enginesDuration = 2;
+  tickRate = 0.7;
+  weaponCount = 1;
+  positionOffset = createVector(0, player.sprite.height / 2 + playerEnginesSprite.height / 2 - 3);
+  position = player.position.copy().add(this.positionOffset);
+  type = "player";
+  width = playerEnginesSprite.width;
+  height = playerEnginesSprite.height;
+  damagePerSecond = 10;
+  tickRate = 0.4;
+  isActive;
 
   update() {
-    //destroy when duration runs out
-    if (millis() - this.creationTime >= this.duration * 1000) {
-      this.destroy();
-      return;
-    }
-    //set its position to follow the ship that shoots it
-    this.position = this.weapon.weaponOwner.position.copy().add(this.positionOffset);
+    //set its position to follow the player
+    this.position = player.position.copy().add(this.positionOffset);
     this.show();
   }
 
   show() {
     image(playerEnginesSprite, this.position.x, this.position.y);
-  }
-
-  destroy() {
-    if (lasers.indexOf(this) != -1) {
-      lasers.splice(lasers.indexOf(this), 1);
-    }
+    push();
+    noFill();
+    stroke(0, 255, 0);
+    rect(this.position.x, this.position.y, this.width, this.height);
+    pop();
   }
 }
