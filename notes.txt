@@ -7,7 +7,13 @@ sound control
 - boss
 - collision detection in hitbox class ?
 
-git archive --format=zip --output Builds/Shooter_v0.07.zip master
+
+
+DEV MODE !!!!!!!!!!!!!!!!!
+git archive --format=zip --output Builds/Shooter_v0.08.1.zip master
+DEV MODE !!!!!!!!!!!!!!!!!
+
+
 
 Credits :
 - morgan3d https://opengameart.org/content/2d-spaceship-sprites-with-engines
