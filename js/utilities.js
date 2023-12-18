@@ -110,7 +110,41 @@ class SpriteAnimation {
   }
 
   destroy() {
-    if (spriteAnimations.indexOf(this) != -1) {
+    if (spriteAnimations.indexOf(this) !== -1) {
+      spriteAnimations.splice(spriteAnimations.indexOf(this), 1);
+    }
+  }
+}
+
+class WarningAnimation {
+  direction = 1;
+  maxSize = warningSprite.width + 10;
+  minSize = 1;
+  size = 1;
+  timer = 0;
+  maxTimer = random(1.5, 2);
+
+  constructor(position) {
+    this.position = position.copy();
+  }
+
+  update() {
+    if (this.timer > this.maxTimer * 1000) {
+      this.destroy();
+      return;
+    }
+    this.timer += deltaTime;
+    if (this.size > this.maxSize || this.size < this.minSize) this.direction *= -1;
+    this.size += 0.8 * this.direction;
+    this.show();
+  }
+
+  show() {
+    image(warningSprite, this.position.x, this.position.y, this.size, this.size);
+  }
+
+  destroy() {
+    if (spriteAnimations.indexOf(this) !== -1) {
       spriteAnimations.splice(spriteAnimations.indexOf(this), 1);
     }
   }
@@ -252,6 +286,5 @@ function sliceSpriteSheet(sheet, columns, rows) {
       columnIndex++;
     } else rowIndex++;
   }
-  print(sprites);
   return sprites;
 }

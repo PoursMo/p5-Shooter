@@ -43,7 +43,7 @@ class Projectile {
   }
 
   destroy() {
-    if (bullets.indexOf(this) != -1) {
+    if (bullets.indexOf(this) !== -1) {
       bullets.splice(bullets.indexOf(this), 1);
     }
   }
@@ -72,7 +72,7 @@ class PlayerSeekerBullet extends Projectile {
   update() {
     this.speed = lerp(this.speed, 50, 0.001);
     //if target ship no longer exists
-    if (enemyShips.indexOf(this.target) === -1 && this.target != 1) {
+    if (enemyShips.indexOf(this.target) === -1 && this.target !== 1) {
       //if there is no enemy ship
       if (enemyShips.length === 0) {
         //send the bullet at a random vector above the canvas
@@ -86,7 +86,7 @@ class PlayerSeekerBullet extends Projectile {
       }
     }
     //if the missile has a target, set the bullet direction
-    if (this.target != 1) {
+    if (this.target !== 1) {
       this.targetVector = this.target.hitbox.position.copy();
     }
     this.direction = this.targetVector.copy().sub(this.position);
@@ -116,7 +116,7 @@ class Laser {
     this.type = weapon.type;
     this.width = weapon.projectileSize;
     this.duration = 5;
-    this.#expandDuration = this.duration * 0.2;
+    this.#expandDuration = this.duration * 0.1;
     this.creationTime = millis();
     this.damagePerSecond = weapon.damage;
     this.tickRate = weapon.tickRate;
@@ -134,8 +134,6 @@ class Laser {
       this.destroy();
       return;
     }
-    //set its position to follow the ship that shoots it
-    this.position = this.weapon.weaponOwner.position.copy().add(this.positionOffset);
     //expanding animation
     if (this.#expandTimer < this.#expandDuration * 1000) {
       this.height += (this.direction.y * height) / ((this.#expandDuration * 1000) / deltaTime);
@@ -143,6 +141,8 @@ class Laser {
         (this.direction.y * height) / ((this.#expandDuration * 1000) / deltaTime) / 2;
       this.#expandTimer += deltaTime;
     }
+    //set its position to follow the ship that shoots it
+    this.position = this.weapon.weaponOwner.position.copy().add(this.positionOffset);
     this.show();
   }
 
@@ -170,7 +170,7 @@ class Laser {
   }
 
   destroy() {
-    if (lasers.indexOf(this) != -1) {
+    if (lasers.indexOf(this) !== -1) {
       lasers.splice(lasers.indexOf(this), 1);
     }
   }

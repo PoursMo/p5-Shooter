@@ -1,8 +1,7 @@
 class Ship {
-  constructor(sprite, position, direction) {
-    this.direction = direction;
-    this.position = position;
+  constructor(sprite, position) {
     this.sprite = sprite;
+    this.position = position.copy();
   }
 
   update() {
@@ -31,12 +30,19 @@ class EnemyShip extends Ship {
   healthPickUpDropChance = 0.02;
   bombPickUpDropChance = 0.01;
   lastHitTime = 0;
+  pathTargetIndex = 1;
 
-  constructor(sprite, position, direction) {
-    super(sprite, position, direction);
+  constructor(sprite, path) {
+    super(sprite, path[0]);
+    this.path = path;
+    this.direction = p5.Vector.sub(this.path[this.pathTargetIndex], this.position);
   }
 
   update() {
+    if (p5.Vector.dist(this.position, this.path[this.pathTargetIndex]) < 2) {
+      this.pathTargetIndex++;
+      this.direction = p5.Vector.sub(this.path[this.pathTargetIndex], this.position);
+    }
     super.update();
     if (this.isOutOfBounds()) {
       this.destroy();
@@ -91,7 +97,7 @@ class EnemyShip extends Ship {
   }
 
   destroy() {
-    if (enemyShips.indexOf(this) != -1) {
+    if (enemyShips.indexOf(this) !== -1) {
       enemyShips.splice(enemyShips.indexOf(this), 1);
     }
   }
@@ -105,8 +111,8 @@ class Hawk extends EnemyShip {
   maxHealth = 2;
   damageable = new Damageable("player", "rectangle", this.maxHealth, this);
 
-  constructor(position, direction) {
-    super(hawkSprite, position, direction);
+  constructor(path) {
+    super(hawkSprite, path);
     this.hitbox = new Hitbox("rectangle", this, createVector(), 0, 0);
     this.weapon = new BulletBlaster(
       createVector(0, this.sprite.height / 2),
@@ -125,12 +131,12 @@ class Hawk extends EnemyShip {
 }
 
 class Pathfinder extends EnemyShip {
-  speed = 3;
+  speed = 2;
   maxHealth = 3;
   damageable = new Damageable("player", "rectangle", this.maxHealth, this);
 
-  constructor(position, direction) {
-    super(pathfinderSprite, position, direction, 30);
+  constructor(path) {
+    super(pathfinderSprite, path, 30);
     this.hitbox = new Hitbox("rectangle", this, createVector(), 0, 0);
   }
 }
@@ -140,9 +146,9 @@ class Asteroid extends EnemyShip {
   maxHealth = 5;
   damageable = new Damageable("player", "circle", this.maxHealth, this);
 
-  constructor(position, direction) {
+  constructor(path) {
     let randomSprites = random([asteroid1Sprites, asteroid2Sprites]);
-    super(randomSprites[0], position, direction);
+    super(randomSprites[0], path);
     this.size = randomSprites[0].width;
     this.hitbox = new Hitbox("circle", this, createVector(), 0);
     this.animation = new SpriteAnimation(randomSprites, this, true);
@@ -169,8 +175,8 @@ class Raven extends EnemyShip {
   maxHealth = 2;
   damageable = new Damageable("player", "rectangle", this.maxHealth, this);
 
-  constructor(position, direction) {
-    super(ravenSprite, position, direction);
+  constructor(path) {
+    super(ravenSprite, path);
     this.hitbox = new Hitbox("rectangle", this, createVector(), 0, 0);
     this.weapon = new BulletBlaster(
       createVector(0, this.sprite.height / 2),
@@ -195,8 +201,8 @@ class Bomber extends EnemyShip {
   bulletSize = 20;
   damageable = new Damageable("player", "rectangle", this.maxHealth, this);
 
-  constructor(position, direction) {
-    super(bomberSprite, position, direction);
+  constructor(path) {
+    super(bomberSprite, path);
     this.hitbox = new Hitbox("rectangle", this, createVector(), 0, 0);
     this.weapon = new SeekerThrower(
       createVector(0, this.sprite.height / 2),
@@ -219,8 +225,8 @@ class Zapper extends EnemyShip {
   laserWidth = 15;
   damageable = new Damageable("player", "rectangle", this.maxHealth, this);
 
-  constructor(position, direction) {
-    super(zapperSprite, position, direction);
+  constructor(path) {
+    super(zapperSprite, path);
     this.hitbox = new Hitbox("rectangle", this, createVector(), 0, 0);
     this.weapon = new LaserGun(
       createVector(0, this.sprite.height / 2),
@@ -245,7 +251,7 @@ class SeekerMissile extends EnemyShip {
   damageable = new Damageable("player", "circle", this.maxHealth, this);
 
   constructor(position, weapon) {
-    super(0, position, undefined);
+    super(0, [position, player.position]);
     this.size = weapon.projectileSize;
     this.hitbox = new Hitbox("circle", this, createVector(), 0);
   }

@@ -26,7 +26,7 @@ class Weapon {
   fire() {}
 
   destroy() {
-    if (weapons.indexOf(this) != -1) {
+    if (weapons.indexOf(this) !== -1) {
       weapons.splice(weapons.indexOf(this), 1);
     }
   }
@@ -128,7 +128,7 @@ class LaserGun extends Weapon {
 }
 
 class PlayerBulletBlasters extends Weapon {
-  bulletSpeed = 7;
+  bulletSpeed = 8;
   direction = createVector(0, -1);
   weaponCount = 2;
   level = 1;
@@ -159,19 +159,19 @@ class PlayerBulletBlasters extends Weapon {
 
   levelEffects = new Array(
     //2
-    () => (this.baseDamage += 1),
+    () => (this.baseFireDelay -= 0.05),
     //3
     () => (this.weaponCount += 2),
     //4
-    () => (this.baseFireDelay -= 0.05),
-    //5
     () => (this.projectileSize += 1),
+    //5
+    () => (this.baseFireDelay -= 0.05),
     //6
     () => (this.bulletSpeed += 1),
     //7
     () => (this.weaponCount += 2),
     //8
-    () => (this.baseFireDelay -= 0.05)
+    () => (this.baseDamage += 1)
   );
 
   levelUp() {

@@ -34,7 +34,7 @@ class Experience {
   }
 
   destroy() {
-    if (experiences.indexOf(this) != -1) {
+    if (experiences.indexOf(this) !== -1) {
       experiences.splice(experiences.indexOf(this), 1);
     }
   }

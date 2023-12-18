@@ -1,7 +1,6 @@
 let bullets = new Array();
 let lasers = new Array();
 let enemyShips = new Array();
-let waves = new Array();
 let experiences = new Array();
 let pickUps = new Array();
 let stars = new Array();
@@ -14,7 +13,7 @@ let isGameRunning = false;
 let isGameOver = false;
 let gameTimer;
 let timeGameStart;
-let wavesManager;
+let spawnManager;
 let ui;
 
 //Sprite Sheets
@@ -124,14 +123,13 @@ function newGame() {
   bullets = new Array();
   lasers = new Array();
   enemyShips = new Array();
-  waves = new Array();
   experiences = new Array();
   pickUps = new Array();
   spriteAnimations = new Array();
   playerStats = new PlayerStats();
   player = new PlayerShip(playerSprite);
   playerStats.levelUp();
-  wavesManager = new WaveManager();
+  spawnManager = new SpawnManager();
   bossKilled = false;
   timeGameStart = millis();
   gameTimer = 0;
@@ -146,7 +144,6 @@ function draw() {
     star.update();
   }
   if (isGameRunning) {
-    wavesManager.update();
     player.update();
     let enemyShipsIndex = enemyShips.length;
     while (enemyShipsIndex--) {
@@ -166,8 +163,9 @@ function draw() {
     for (const experience of experiences) {
       experience.update();
     }
-    for (const animation of spriteAnimations) {
-      animation.update();
+    let animationsIndex = spriteAnimations.length;
+    while (animationsIndex--) {
+      spriteAnimations[animationsIndex].update();
     }
     gameTimer = millis() - timeGameStart;
   }

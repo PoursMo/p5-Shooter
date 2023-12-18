@@ -41,7 +41,7 @@ class PickUp {
   }
 
   destroy() {
-    if (pickUps.indexOf(this) != -1) {
+    if (pickUps.indexOf(this) !== -1) {
       pickUps.splice(pickUps.indexOf(this), 1);
     }
   }

@@ -1,4 +1,4 @@
-class PlayerShip extends Ship {
+class PlayerShip {
   direction = createVector();
   bulletBlaster;
   seekerThrower;
@@ -6,12 +6,12 @@ class PlayerShip extends Ship {
   baseSpeed = 5;
   speed = this.baseSpeed;
   #lastHitTime = 0;
-  invulTime = 0.3;
+  invulTime = 0.2;
   damageable = new Damageable("enemy", "rectangle", playerStats.maxHealth, this);
   isMoving;
 
-  constructor(sprite) {
-    super(sprite, 0, 0);
+  constructor() {
+    this.sprite = playerSprite;
     this.health = this.maxHealth;
     this.position = createVector(width / 2, height - 60);
     this.hitbox = new Hitbox("rectangle", this, createVector(0, 6), -8, -15);
@@ -41,6 +41,10 @@ class PlayerShip extends Ship {
       this.engines.update();
       this.engines.isActive = true;
     } else this.engines.isActive = false;
+  }
+
+  show() {
+    image(this.sprite, this.position.x, this.position.y);
   }
 
   #boundsCollision() {

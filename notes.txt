@@ -1,12 +1,11 @@
 - sounds
 - UI
-- better waves
-warnings ?
+difficulty
+player stats
+weapons stats
+sound control
 - better boss
-- support spritesheets
-- better levelup
-- collision detection in hitbox class ?    
-- laser teleports at end of extension
+- collision detection in hitbox class ?
 
 
 
