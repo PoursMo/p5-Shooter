@@ -16,6 +16,7 @@ class PickUp {
     } else if (this.position.y + this.size > height) {
       this.position.y = height - this.size;
     }
+    setTimeout(() => this.destroy(), 15 * 1000);
   }
 
   update() {

@@ -4,19 +4,10 @@ difficulty
 player stats
 weapons stats
 sound control
-- better boss
+- boss
 - collision detection in hitbox class ?
 
-
-
-- characters with different starting weapons + abilities ?
-- abilities :
-shield ?
-dodge ?
-slow time ?
-
 git archive --format=zip --output Builds/Shooter_v0.07.zip master
-
 
 Credits :
 - morgan3d https://opengameart.org/content/2d-spaceship-sprites-with-engines
