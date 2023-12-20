@@ -1,6 +1,5 @@
 class SpawnManager {
-  difficultyIndex = 0;
-
+  bossTimeSpawn = 300;
   difficulties = new Array(
     {
       enemies: new Array(
@@ -55,17 +54,40 @@ class SpawnManager {
     }
   );
 
-  constructor() {
+  initialize() {
+    //set difficulty
+    this.difficultyIndex = 0;
     this.currentDifficulty = this.difficulties[this.difficultyIndex];
+    //start with asteroids for 20s
     this.currentInterval = setInterval(
       () => this.spawnAsteroid(),
       this.currentDifficulty.asteroidIntervalTimer * 1000
     );
+    //set asteroids to go for 20s every minute
     this.asteroidSetterInterval = setInterval(() => this.setAsteroidInterval(), 60 * 1000);
-    setTimeout(() => {
+    //wait 20s then start enemies for 40s every minute
+    this.startEnemiesSpawnTimeout = setTimeout(() => {
       this.enemiesSetterInterval = setInterval(() => this.setEnemiesInterval(), 60 * 1000);
       this.setEnemiesInterval();
     }, 20 * 1000);
+    //boss spawn at 5mn + many warnings
+    this.bossSpawnTimeout = setTimeout(() => {
+      this.clearIntervals();
+      enemyShips.push(new Boss());
+      for (let index = 0; index < 20; index++) {
+        spriteAnimations.push(
+          new WarningAnimation(createVector(random() * width, random() * height))
+        );
+      }
+    }, this.bossTimeSpawn * 1000);
+  }
+
+  clearIntervals() {
+    clearInterval(this.asteroidSetterInterval);
+    clearInterval(this.enemiesSetterInterval);
+    clearInterval(this.currentInterval);
+    clearTimeout(this.startEnemiesSpawnTimeout);
+    clearTimeout(this.bossSpawnTimeout);
   }
 
   setAsteroidInterval() {
@@ -96,15 +118,17 @@ class SpawnManager {
   generateEnemyWave() {
     const path = this.generateRandomPath();
     const ship = random(this.currentDifficulty.enemies);
-    new EnemyWave(path, ship.ship, ship.count, random(0.4, 1.2));
+    new EnemyWave(path, ship.ship, ship.count, random(0.4, 0.8));
   }
 
   generateRandomPath() {
     const spawnSide = random(["left", "right"]);
     const oppositeSide = spawnSide === "right" ? "left" : "right";
     const spawnPosition = this.getRandomSideSpawn(spawnSide);
-    if (random() < 0.5) return this.straightPath(spawnPosition, oppositeSide);
-    else return this.loopedPath(spawnPosition, oppositeSide);
+    const rand = random();
+    if (rand < 0.334) return this.straightPath(spawnPosition, oppositeSide);
+    else if (rand < 0.667) return this.loopedPath(spawnPosition, oppositeSide);
+    else return this.crookedPath(spawnPosition, oppositeSide);
   }
 
   getRandomSideSpawn(side) {
@@ -127,6 +151,19 @@ class SpawnManager {
 
   straightPath(from, to) {
     return [from, this.getRandomSideDirectionPosition(from, to)];
+  }
+
+  crookedPath(from, to) {
+    const path = [from];
+    const lastPos = this.getRandomSideDirectionPosition(from, to);
+    const dir = p5.Vector.sub(lastPos, from);
+
+    const midPoint = p5.Vector.add(from, p5.Vector.div(dir, 2));
+    midPoint.add(createVector(random(-50, 50), random(-50, 50)));
+
+    path.push(midPoint, lastPos);
+
+    return path;
   }
 
   loopedPath(from, to) {

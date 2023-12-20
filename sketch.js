@@ -1,5 +1,6 @@
 let bullets = new Array();
 let lasers = new Array();
+let blades = new Array();
 let enemyShips = new Array();
 let experiences = new Array();
 let pickUps = new Array();
@@ -25,6 +26,7 @@ let levelUpAnimationSheet;
 let bubbleExplosionAnimationSheet;
 
 //Sprites & animations
+let bladeSprite;
 let levelUpAnimationSprites;
 let asteroid1Sprites;
 let asteroid2Sprites;
@@ -46,6 +48,7 @@ let pixelFont;
 let devMode = false;
 
 function preload() {
+  bladeSprite = loadImage("./assets/blade.png");
   shipsSpriteDown = loadImage("./assets/ships_looking_down.png");
   shipsSpriteUp = loadImage("./assets/ships_looking_up.png");
   bubbleExplosionAnimationSheet = loadImage("./assets/bubble_explosion_animation.png");
@@ -79,6 +82,7 @@ function setup() {
     sprite.resize(0, 40);
   }
   levelUpAnimationSprites = sliceSpriteSheet(levelUpAnimationSheet, 8, 1);
+  bladeSprite.resize(25, 0);
   playerSprite = shipsSpriteUp.get(64, 72, 128, 100);
   playerSprite.resize(0, 35);
   playerEnginesSprite = shipsSpriteUp.get(328, 168, 112, 52);
@@ -94,7 +98,7 @@ function setup() {
   zapperSprite = shipsSpriteDown.get(320, 2876, 128, 132);
   zapperSprite.resize(0, 40);
   bossSprite = shipsSpriteDown.get(284, 2360, 200, 164);
-  bossSprite.resize(0, 300);
+  bossSprite.resize(0, 350);
 
   //Canvas
   createCanvas(400, 600);
@@ -105,6 +109,7 @@ function setup() {
   imageMode(CENTER);
 
   //Game Setup
+  spawnManager = new SpawnManager();
   ui = new UI();
   ui.showPlayButton();
   for (let index = 0; index < 50; index++) {
@@ -115,13 +120,21 @@ function setup() {
 function gameOver() {
   isGameRunning = false;
   isGameOver = true;
+  //stop all intervals and timeouts
+  let id = setTimeout(function () {}, 0);
+  while (id--) {
+    clearTimeout(id);
+    clearInterval(id);
+  }
   ui.showPlayButton();
+  spawnManager.clearIntervals();
 }
 
 function newGame() {
   ui.hidePlayButton();
   bullets = new Array();
   lasers = new Array();
+  blades = new Array();
   enemyShips = new Array();
   experiences = new Array();
   pickUps = new Array();
@@ -129,7 +142,7 @@ function newGame() {
   playerStats = new PlayerStats();
   player = new PlayerShip(playerSprite);
   playerStats.levelUp();
-  spawnManager = new SpawnManager();
+  spawnManager.initialize();
   bossKilled = false;
   timeGameStart = millis();
   gameTimer = 0;
@@ -145,10 +158,6 @@ function draw() {
   }
   if (isGameRunning) {
     player.update();
-    let enemyShipsIndex = enemyShips.length;
-    while (enemyShipsIndex--) {
-      enemyShips[enemyShipsIndex].update();
-    }
     for (const pickUp of pickUps) {
       pickUp.update();
     }
@@ -159,6 +168,14 @@ function draw() {
     let bulletsIndex = bullets.length;
     while (bulletsIndex--) {
       bullets[bulletsIndex].update();
+    }
+    let bladesIndex = blades.length;
+    while (bladesIndex--) {
+      blades[bladesIndex].update();
+    }
+    let enemyShipsIndex = enemyShips.length;
+    while (enemyShipsIndex--) {
+      enemyShips[enemyShipsIndex].update();
     }
     for (const experience of experiences) {
       experience.update();

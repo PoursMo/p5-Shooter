@@ -2,8 +2,9 @@ class Experience {
   speed = 1;
   size = 3;
 
-  constructor(position) {
+  constructor(position, experienceAmount) {
     this.position = position;
+    this.experienceAmount = experienceAmount;
     this.direction = createVector();
   }
 
@@ -18,7 +19,7 @@ class Experience {
     this.direction.normalize();
     this.position.add(this.direction.mult(this.speed));
     if (checkCollisionCircleRect(this, player.hitbox)) {
-      playerStats.gainExperience();
+      playerStats.gainExperience(this.experienceAmount);
       this.destroy();
       return;
     }

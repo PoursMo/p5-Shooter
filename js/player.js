@@ -1,12 +1,11 @@
 class PlayerShip {
   direction = createVector();
-  bulletBlaster;
-  seekerThrower;
-  laserGun;
+  bladeBlasters;
+  seekerThrowers;
+  laserGuns;
   baseSpeed = 5;
   speed = this.baseSpeed;
-  #lastHitTime = 0;
-  invulTime = 0.2;
+  invulTime = 0.3;
   damageable = new Damageable("enemy", "rectangle", playerStats.maxHealth, this);
   isMoving;
 
@@ -23,20 +22,8 @@ class PlayerShip {
     this.position.add(this.direction.mult(this.speed));
     this.#boundsCollision();
     this.hitbox.update();
-    if (this.damageable.invulnerable && millis() - this.#lastHitTime >= this.invulTime * 1000) {
-      this.damageable.invulnerable = false;
-    }
     this.damageable.update();
     this.show();
-    if (this.bulletBlaster) {
-      this.bulletBlaster.update();
-    }
-    if (this.seekerThrower) {
-      this.seekerThrower.update();
-    }
-    if (this.laserGun) {
-      this.laserGun.update();
-    }
     if (this.isMoving) {
       this.engines.update();
       this.engines.isActive = true;
@@ -59,8 +46,8 @@ class PlayerShip {
 
   onTakeDamage() {
     spriteAnimations.push(new SpriteAnimation(bubbleExplosionAnimationSprites, this.position));
-    this.#lastHitTime = millis();
     this.damageable.invulnerable = true;
+    setTimeout(() => (this.damageable.invulnerable = false), this.invulTime * 1000);
   }
 
   onDeath() {
@@ -123,28 +110,85 @@ class PlayerStats {
   damageMultiplier = 1;
   fireDelayMultiplier = 1;
 
-  gainExperience() {
-    this.experience++;
-    if (this.experience % 10 === 0) {
+  bladeBlasterStats = {
+    positionOffsets: [createVector(16, -10), createVector(-16, -10)],
+    startWeaponCount: 2,
+    baseFireDelay: 0.5,
+    baseDamage: 1,
+    projectileSpeed: 8,
+  };
+
+  seekerThrowersStats = {
+    positionOffsets: [
+      createVector(playerSprite.width / 2, -10),
+      createVector(-playerSprite.width / 2, -10),
+    ],
+    startWeaponCount: 2,
+    baseFireDelay: 4,
+    baseDamage: 5,
+    projectileSize: 8,
+  };
+
+  laserGunsStats = {
+    positionOffsets: [createVector(16, -10), createVector(-16, -10)],
+    startWeaponCount: 2,
+    baseFireDelay: 5,
+    baseDamagePerSeconds: 5,
+    laserWidth: 15,
+    laserDuration: 3,
+    tickRate: 0.2,
+  };
+
+  gainExperience(amount) {
+    this.experience += amount;
+    if (this.experience >= 10) {
       this.levelUp();
-      this.experience = 0;
+      this.experience -= 10;
     }
   }
 
   levelUp() {
+    //level up animation
     spriteAnimations.push(new SpriteAnimation(levelUpAnimationSprites, player.position));
+    //levels
     this.level++;
     if (this.level === 1) {
       player.engines = new PlayerEngines();
-      player.bulletBlaster = new PlayerBulletBlasters();
-    } else if (this.level === 5) player.seekerThrower = new PlayerSeekerThrowers();
-    else if (this.level === 10) player.laserGun = new PlayerLaserGuns();
-    else if (player.bulletBlaster.levelUp()) return;
-    else if (player.seekerThrower.levelUp()) return;
-    else if (player.laserGun.levelUp()) return;
+      player.bladeBlasters = new PlayerBladeBlasters(
+        this.bladeBlasterStats.positionOffsets,
+        this.bladeBlasterStats.startWeaponCount,
+        this.bladeBlasterStats.baseFireDelay,
+        this.bladeBlasterStats.baseDamage,
+        this.bladeBlasterStats.projectileSpeed,
+        "up"
+      );
+    } else if (this.level === 5)
+      player.seekerThrowers = new PlayerSeekerThrowers(
+        this.seekerThrowersStats.positionOffsets,
+        this.seekerThrowersStats.startWeaponCount,
+        this.seekerThrowersStats.baseFireDelay,
+        this.seekerThrowersStats.baseDamage,
+        this.seekerThrowersStats.projectileSize
+      );
+    else if (this.level === 10)
+      player.laserGuns = new PlayerLaserGuns(
+        this.laserGunsStats.positionOffsets,
+        this.laserGunsStats.startWeaponCount,
+        this.laserGunsStats.baseFireDelay,
+        this.laserGunsStats.baseDamagePerSeconds,
+        this.laserGunsStats.tickRate,
+        this.laserGunsStats.laserWidth,
+        this.laserGunsStats.laserDuration
+      );
+    else if (player.bladeBlasters.levelUp()) return;
+    else if (player.seekerThrowers.levelUp()) return;
+    else if (player.laserGuns.levelUp()) return;
     else {
       this.damageMultiplier += 0.01;
       this.fireDelayMultiplier += 0.01;
+      player.bladeBlasters.updateStats();
+      player.seekerThrowers.updateStats();
+      player.laserGuns.updateStats();
     }
   }
 }

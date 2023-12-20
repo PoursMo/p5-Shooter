@@ -5,8 +5,10 @@ player stats
 weapons stats
 sound control
 - boss
+- side asteroids
 - collision detection in hitbox class ?
-
+- use setInterval
+- player level update weapons
 
 
 DEV MODE !!!!!!!!!!!!!!!!!

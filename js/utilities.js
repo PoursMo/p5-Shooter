@@ -210,6 +210,7 @@ class Damageable {
     this.checkBullets();
     this.checkLasers();
     this.checkPlayerEngines();
+    this.checkBlades();
   }
 
   checkBullets() {
@@ -225,6 +226,19 @@ class Damageable {
     }
   }
 
+  checkBlades() {
+    let i = blades.length;
+    while (i--) {
+      if (
+        blades[i].type === this.damagerType &&
+        this.laserFunction(this.parent.hitbox, blades[i])
+      ) {
+        this.takeDamage(blades[i].damage);
+        blades[i].destroy();
+      }
+    }
+  }
+
   checkPlayerEngines() {
     if (
       this.damagerType === "player" &&
@@ -232,7 +246,7 @@ class Damageable {
       millis() - this.#playerEnginesLastHitTime >= player.engines.tickRate * 1000 &&
       this.laserFunction(this.parent.hitbox, player.engines)
     ) {
-      this.takeDamage(player.engines.damagePerSecond * player.engines.tickRate);
+      this.takeDamage(player.engines.damagePerSeconds * player.engines.tickRate);
       this.#playerEnginesLastHitTime = millis();
     }
   }
@@ -244,7 +258,7 @@ class Damageable {
         millis() - this.#laserLastHitTime >= laser.tickRate * 1000 &&
         this.laserFunction(this.parent.hitbox, laser)
       ) {
-        this.takeDamage(laser.damagePerSecond * laser.tickRate);
+        this.takeDamage(laser.damagePerSeconds * laser.tickRate);
         this.#laserLastHitTime = millis();
       }
     }

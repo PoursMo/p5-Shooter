@@ -4,19 +4,18 @@ class Projectile {
     this.damage = weapon.damage;
     this.size = weapon.projectileSize;
     this.type = weapon.type;
-    this.speed = weapon.bulletSpeed;
+    this.speed = weapon.projectileSpeed;
     this.weapon = weapon;
-    bullets.push(this);
   }
 
   update() {
+    this.direction.normalize();
+    this.direction.mult(this.speed);
+    this.position.add(this.direction);
     if (this.isOutOfBounds()) {
       this.destroy();
       return;
     }
-    this.direction.normalize();
-    this.direction.mult(this.speed);
-    this.position.add(this.direction);
     this.show();
   }
 
@@ -49,24 +48,44 @@ class Projectile {
   }
 }
 
+class Blade extends Projectile {
+  constructor(position, weapon) {
+    super(position, weapon);
+    this.direction = this.weapon.fireDirection.copy();
+    this.width = bladeSprite.width;
+    this.height = bladeSprite.height;
+    blades.push(this);
+  }
+  show() {
+    image(bladeSprite, this.position.x, this.position.y);
+  }
+  destroy() {
+    if (blades.indexOf(this) !== -1) {
+      blades.splice(blades.indexOf(this), 1);
+    }
+  }
+}
 class Bullet extends Projectile {
   constructor(position, weapon) {
     super(position, weapon);
-    this.direction = this.weapon.direction.copy();
+    this.direction = this.weapon.fireDirection.copy();
+    bullets.push(this);
   }
 }
 
 class PlayerSeekerBullet extends Projectile {
   constructor(position, weapon) {
     super(position, weapon);
-    this.targetVector = createVector();
     this.speed = 2;
     if (enemyShips.length === 0) {
+      //if there is no enemy, send the bullet to a random position above the canvas
       this.targetVector = createVector(random(width), -150);
       this.target = 1;
     } else {
+      //if there are enemies, pick one at random to be the target
       this.target = enemyShips[round(random(enemyShips.length - 1))];
     }
+    bullets.push(this);
   }
 
   update() {
@@ -112,25 +131,22 @@ class Laser {
 
   constructor(positionOffset, weapon) {
     this.positionOffset = positionOffset.copy();
-    this.direction = weapon.direction;
+    this.direction = weapon.fireDirection;
     this.type = weapon.type;
-    this.width = weapon.projectileSize;
-    this.duration = 5;
-    this.#expandDuration = this.duration * 0.1;
+    this.width = weapon.laserWidth;
+    this.#expandDuration = weapon.laserDuration * 0.1;
     this.creationTime = millis();
-    this.damagePerSecond = weapon.damage;
+    this.damagePerSeconds = weapon.damagePerSeconds;
     this.tickRate = weapon.tickRate;
     this.weapon = weapon;
     this.position = weapon.weaponOwner.position.copy().add(positionOffset);
     lasers.push(this);
+    setTimeout(() => this.destroy(), weapon.laserDuration * 1000);
   }
 
   update() {
-    //destroy when duration runs out or if owner is dead
-    if (
-      millis() - this.creationTime >= this.duration * 1000 ||
-      (this.type === "enemy" && enemyShips.indexOf(this.weapon.weaponOwner) === -1)
-    ) {
+    //destroy if owner is dead
+    if (this.type === "enemy" && enemyShips.indexOf(this.weapon.weaponOwner) === -1) {
       this.destroy();
       return;
     }
@@ -185,7 +201,7 @@ class PlayerEngines {
   type = "player";
   width = playerEnginesSprite.width;
   height = playerEnginesSprite.height;
-  damagePerSecond = 10;
+  damagePerSeconds = 10;
   tickRate = 0.4;
   isActive;
 

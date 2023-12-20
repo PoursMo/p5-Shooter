@@ -38,12 +38,14 @@ class UI {
     noStroke();
     textFont(pixelFont);
     textSize(20);
-    let minutes = floor(gameTimer / 1000 / 60);
-    if (minutes < 10) minutes = "0" + minutes;
-    let seconds = floor((gameTimer / 1000) % 60);
-    if (seconds < 10) seconds = "0" + seconds;
-    text("You survived\n" + minutes + "m" + seconds + "s", width / 2, height / 1.5);
-    pop();
+    if (!bossKilled) {
+      let minutes = floor(gameTimer / 1000 / 60);
+      if (minutes < 10) minutes = "0" + minutes;
+      let seconds = floor((gameTimer / 1000) % 60);
+      if (seconds < 10) seconds = "0" + seconds;
+      text("You survived\n" + minutes + "m" + seconds + "s", width / 2, height / 1.5);
+      pop();
+    }
   }
 
   showWinScreen() {
