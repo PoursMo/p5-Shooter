@@ -7,8 +7,6 @@
 
     <title>P5 Shooter</title>
 
-    <p class="tooltip">- Use WASD or ↑←↓→ to move <br />- Esc to end game</p>
-
     <script src="./p5/p5.min.js"></script>
     <script src="./p5/p5.sound.min.js"></script>
 
@@ -22,38 +20,95 @@
     <script src="./js/pickups.js"></script>
     <script src="./js/weapon.js"></script>
     <script src="./js/UI.js"></script>
-    <!-- <script src="./js/soundsManager.js"></script> -->
+
+    <p class="tooltip">Movement = WASD / ↑←↓→ <br />Restart = Esc</p>
+    <p class="musicSlider">Music</p>
+    <p class="soundSlider">Sounds</p>
+
     <style>
       .wrapper {
-        display: flex;
-        height: 100vh;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-      }
-
-      .weaponUI {
-        font-size: 30px;
-        margin: auto;
         position: absolute;
-        left: 20%;
+        left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
+      }
+
+      .musicSlider {
+        font-size: 20px;
+        position: absolute;
+        left: 1050px;
+        top: 60px;
+      }
+
+      .soundSlider {
+        font-size: 20px;
+        position: absolute;
+        left: 1050px;
+        top: 160px;
+      }
+
+      .bladeBlastersUI {
+        border-right-style: solid;
+        border-right-width: 1px;
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+        border-left-style: solid;
+        border-left-width: 1px;
+        border-top-style: solid;
+        border-top-width: 1px;
+        font-size: 20px;
+        position: absolute;
+        left: 400px;
+        top: 200px;
+      }
+
+      .seekerThrowersUI {
+        border-right-style: solid;
+        border-right-width: 1px;
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+        border-left-style: solid;
+        border-left-width: 1px;
+        border-top-style: solid;
+        border-top-width: 1px;
+        font-size: 20px;
+        position: absolute;
+        left: 400px;
+        top: 300px;
+      }
+
+      .laserGunsUI {
+        border-right-style: solid;
+        border-right-width: 1px;
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+        border-left-style: solid;
+        border-left-width: 1px;
+        border-top-style: solid;
+        border-top-width: 1px;
+        font-size: 20px;
+        position: absolute;
+        left: 400px;
+        top: 400px;
       }
 
       .tooltip {
+        border-right-style: solid;
+        border-right-width: 1px;
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+        border-left-style: solid;
+        border-left-width: 1px;
+        border-top-style: solid;
+        border-top-width: 1px;
+        width: 400px;
         font-size: 30px;
-        margin: auto;
         position: absolute;
-        left: 85%;
-        top: 50%;
-        transform: translate(-50%, -50%);
+        left: 1000px;
+        top: 300px;
       }
 
       body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
         background-color: #a5a292;
       }
 

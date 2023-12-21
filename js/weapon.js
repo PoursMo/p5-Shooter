@@ -103,17 +103,20 @@ class PlayerBladeBlasters extends Weapon {
       }
       new Blade(WeaponPosition, this);
     }
+    bladeBlaserSound.play();
   }
 
   updateStats() {
     this.fireDelay = this.baseFireDelay / playerStats.fireDelayMultiplier;
     this.damage = this.baseDamage * playerStats.damageMultiplier;
+    ui.bladeBlastersStats();
   }
 
   levelUp() {
     if (this.level < this.levelEffects.length + 1) {
       this.level++;
       this.levelEffects[this.level - 2]();
+      this.updateStats();
       return true;
     } else return false;
   }
@@ -186,11 +189,6 @@ class PlayerSeekerThrowers extends Weapon {
     this.startFiring();
   }
 
-  updateStats() {
-    this.fireDelay = this.baseFireDelay / playerStats.fireDelayMultiplier;
-    this.damage = this.baseDamage * playerStats.damageMultiplier;
-  }
-
   fire() {
     for (let index = 0; index < this.weaponCount; index++) {
       new PlayerSeekerBullet(
@@ -198,12 +196,20 @@ class PlayerSeekerThrowers extends Weapon {
         this
       );
     }
+    seekerThrowerSound.play();
+  }
+
+  updateStats() {
+    this.fireDelay = this.baseFireDelay / playerStats.fireDelayMultiplier;
+    this.damage = this.baseDamage * playerStats.damageMultiplier;
+    ui.seekerThrowersStats();
   }
 
   levelUp() {
     if (this.level < this.levelEffects.length + 1) {
       this.level++;
       this.levelEffects[this.level - 2]();
+      this.updateStats();
       return true;
     } else return false;
   }
@@ -281,15 +287,22 @@ class PlayerLaserGuns extends LaserGuns {
     this.startFiring();
   }
 
+  fire() {
+    super.fire();
+    laserGunSound.play();
+  }
+
   updateStats() {
     this.fireDelay = this.baseFireDelay / playerStats.fireDelayMultiplier + this.laserDuration;
-    this.damage = this.baseDamage * playerStats.damageMultiplier;
+    this.damagePerSeconds = this.baseDamagePerSecond * playerStats.damageMultiplier;
+    ui.laserGunsStats();
   }
 
   levelUp() {
     if (this.level < this.levelEffects.length + 1) {
       this.level++;
       this.levelEffects[this.level - 2]();
+      this.updateStats();
       return true;
     } else return false;
   }

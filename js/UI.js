@@ -1,20 +1,63 @@
 class UI {
-  playButton;
-
   constructor() {
-    this.multipliersUI = createP();
-    this.multipliersUI.addClass("weaponUI");
+    this.bladeBlastersUI = createP();
+    this.bladeBlastersUI.addClass("bladeBlastersUI");
+    this.seekerThrowersUI = createP();
+    this.seekerThrowersUI.addClass("seekerThrowersUI");
+    this.laserGunsUI = createP();
+    this.laserGunsUI.addClass("laserGunsUI");
+    this.musicSlider = createSlider(0, 1, 0.7, 0.01);
+    this.musicSlider.position(1000, 100);
+    this.musicSlider.mouseReleased(() => this.musicSliderUpdate());
+    this.soundsSlider = createSlider(0, 1, 1, 0.01);
+    this.soundsSlider.position(1000, 200);
+    this.soundsSlider.mouseReleased(() => this.soundSlidersUpdate());
   }
 
-  updateStats() {
-    //BITE
-    // this.multipliersUI.html(
-    //   "Fire rate: " +
-    //     round(playerStats.fireDelayMultiplier * 100) +
-    //     "%<br>Damage: " +
-    //     round(playerStats.damageMultiplier * 100) +
-    //     "%"
-    // );
+  bladeBlastersStats() {
+    if (player.bladeBlasters) {
+      this.bladeBlastersUI.html(
+        "Blade Blasters<br />Fire Rate : " +
+          round(1 / player.bladeBlasters.fireDelay, 2) +
+          "<br />Damage : " +
+          round(player.bladeBlasters.damage, 2)
+      );
+    } else this.bladeBlastersUI.html("");
+  }
+
+  seekerThrowersStats() {
+    if (player.seekerThrowers) {
+      this.seekerThrowersUI.html(
+        "Seeker Throwers<br />Fire Rate : " +
+          round(1 / player.seekerThrowers.fireDelay, 2) +
+          "<br />Damage : " +
+          round(player.seekerThrowers.damage, 2)
+      );
+    } else this.seekerThrowersUI.html("");
+  }
+
+  laserGunsStats() {
+    if (player.laserGuns) {
+      this.laserGunsUI.html(
+        "Laser Guns<br />Fire Rate : " +
+          round(1 / player.laserGuns.fireDelay, 2) +
+          "<br />DPS : " +
+          round(player.laserGuns.damagePerSeconds, 2)
+      );
+    } else this.laserGunsUI.html("");
+  }
+
+  musicSliderUpdate() {
+    music.setVolume(this.musicSlider.value());
+  }
+
+  soundSlidersUpdate() {
+    bladeBlaserSound.setVolume(this.soundsSlider.value());
+    seekerThrowerSound.setVolume(this.soundsSlider.value());
+    laserGunSound.setVolume(this.soundsSlider.value());
+    levelUpSound.setVolume(this.soundsSlider.value());
+    hitSound.setVolume(this.soundsSlider.value());
+    print(this.soundsSlider.value());
   }
 
   update() {

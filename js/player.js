@@ -48,6 +48,7 @@ class PlayerShip {
     spriteAnimations.push(new SpriteAnimation(bubbleExplosionAnimationSprites, this.position));
     this.damageable.invulnerable = true;
     setTimeout(() => (this.damageable.invulnerable = false), this.invulTime * 1000);
+    hitSound.play();
   }
 
   onDeath() {
@@ -148,6 +149,7 @@ class PlayerStats {
   }
 
   levelUp() {
+    levelUpSound.play();
     //level up animation
     spriteAnimations.push(new SpriteAnimation(levelUpAnimationSprites, player.position));
     //levels
@@ -162,7 +164,8 @@ class PlayerStats {
         this.bladeBlasterStats.projectileSpeed,
         "up"
       );
-    } else if (this.level === 5)
+      ui.bladeBlastersStats();
+    } else if (this.level === 5) {
       player.seekerThrowers = new PlayerSeekerThrowers(
         this.seekerThrowersStats.positionOffsets,
         this.seekerThrowersStats.startWeaponCount,
@@ -170,7 +173,8 @@ class PlayerStats {
         this.seekerThrowersStats.baseDamage,
         this.seekerThrowersStats.projectileSize
       );
-    else if (this.level === 10)
+      ui.seekerThrowersStats();
+    } else if (this.level === 10) {
       player.laserGuns = new PlayerLaserGuns(
         this.laserGunsStats.positionOffsets,
         this.laserGunsStats.startWeaponCount,
@@ -180,7 +184,8 @@ class PlayerStats {
         this.laserGunsStats.laserWidth,
         this.laserGunsStats.laserDuration
       );
-    else if (player.bladeBlasters.levelUp()) return;
+      ui.laserGunsStats();
+    } else if (player.bladeBlasters.levelUp()) return;
     else if (player.seekerThrowers.levelUp()) return;
     else if (player.laserGuns.levelUp()) return;
     else {

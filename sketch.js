@@ -45,9 +45,23 @@ let healthPickUpSprite;
 let warningSprite;
 let pixelFont;
 
+//Sounds
+let music;
+let bladeBlaserSound;
+let seekerThrowerSound;
+let laserGunSound;
+let levelUpSound;
+let hitSound;
+
 let devMode = false;
 
 function preload() {
+  music = loadSound("./assets/Sounds/music.mp3", playMusic);
+  bladeBlaserSound = loadSound("./assets/Sounds/bladeBlaster.mp3");
+  seekerThrowerSound = loadSound("./assets/Sounds/seekerThrower.mp3");
+  laserGunSound = loadSound("./assets/Sounds/laserGun.mp3");
+  levelUpSound = loadSound("./assets/Sounds/levelUp.mp3");
+  hitSound = loadSound("./assets/Sounds/hit.mp3");
   bladeSprite = loadImage("./assets/blade.png");
   shipsSpriteDown = loadImage("./assets/ships_looking_down.png");
   shipsSpriteUp = loadImage("./assets/ships_looking_up.png");
@@ -59,6 +73,10 @@ function preload() {
   healthPickUpSprite = loadImage("./assets/pickup_health.png");
   warningSprite = loadImage("./assets/warning.png");
   pixelFont = loadFont("./assets/retro_gaming.ttf");
+}
+
+function playMusic() {
+  music.loop();
 }
 
 function setup() {
@@ -142,6 +160,9 @@ function newGame() {
   playerStats = new PlayerStats();
   player = new PlayerShip(playerSprite);
   playerStats.levelUp();
+  ui.bladeBlastersStats()
+  ui.seekerThrowersStats()
+  ui.laserGunsStats()
   spawnManager.initialize();
   bossKilled = false;
   timeGameStart = millis();

@@ -4,15 +4,11 @@ difficulty
 player stats
 weapons stats
 sound control
-- boss
-- side asteroids
 - collision detection in hitbox class ?
-- use setInterval
-- player level update weapons
 
 
 DEV MODE !!!!!!!!!!!!!!!!!
-git archive --format=zip --output Builds/Shooter_v0.08.1.zip master
+git archive --format=zip --output Builds/Shooter_v0.10.zip master
 DEV MODE !!!!!!!!!!!!!!!!!
 
 
@@ -21,3 +17,4 @@ Credits :
 - morgan3d https://opengameart.org/content/2d-spaceship-sprites-with-engines
 - Tiao Ferreira https://opengameart.org/content/bubble-explosion
 - nightzero https://opengameart.org/content/2d-asteroid-sprite
+- Grand_Project https://pixabay.com/music/synthwave-lady-of-the-80x27s-128379/
